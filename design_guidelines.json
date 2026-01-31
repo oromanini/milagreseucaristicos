@@ -1,0 +1,136 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "The Anti-AI Designer",
+    "mission": "Create a reverent, high-end documentary experience that feels like a digital museum, not a blog.",
+    "archetype": "Jewel & Luxury (Religious Variant)"
+  },
+  "theme": {
+    "name": "The Divine Archive",
+    "mode": "dark",
+    "emotional_tone": "Reverent, Mysterious, Historical, Scientific, Sophisticated",
+    "visual_style": "Dark Museum Mode. High contrast between deep obsidian backgrounds and illuminated gold artifacts."
+  },
+  "colors": {
+    "background": {
+      "default": "#0A0A0B",
+      "paper": "#121214",
+      "overlay": "rgba(10, 10, 11, 0.8)"
+    },
+    "primary": {
+      "gold": "#D4AF37",
+      "gold_dim": "#A68A2D",
+      "gold_light": "#F9E79F"
+    },
+    "secondary": {
+      "blood_red": "#720E1E",
+      "blood_red_dim": "#4A0913"
+    },
+    "text": {
+      "primary": "#E5E5E5",
+      "secondary": "#A1A1AA",
+      "muted": "#52525B",
+      "gold": "#D4AF37"
+    },
+    "border": {
+      "subtle": "#27272A",
+      "gold": "rgba(212, 175, 55, 0.3)"
+    }
+  },
+  "typography": {
+    "headings": {
+      "family": "Playfair Display, serif",
+      "weights": ["400", "600", "700"],
+      "usage": "All section titles, hero text, and miracle names. Use tracking-tight."
+    },
+    "body": {
+      "family": "Manrope, sans-serif",
+      "weights": ["300", "400", "500"],
+      "usage": "Long form content, UI elements, metadata. Use relaxed line-height."
+    },
+    "accents": {
+      "family": "Cinzel, serif",
+      "usage": "Very sparing use for dates or 'Holy' labels (optional, if available)."
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid (Mode A for Home, Mode B for Admin)",
+    "spacing": "Generous. Use p-8 to p-12 for containers. 2x standard spacing.",
+    "container_width": "max-w-7xl",
+    "border_radius": "rounded-none (Sharp) or rounded-sm (2px) for a 'classic' feel. No large rounded corners."
+  },
+  "components": {
+    "hero": {
+      "style": "Cinematic. Full screen height. Slow zoom background image.",
+      "elements": "Gold serif typography, centered or asymmetric. 'Scroll to discover' indicator."
+    },
+    "miracle_card": {
+      "style": "The Relic Case. Dark card with a subtle 1px gold border (opacity 20%).",
+      "hover": "Glow effect (gold shadow). Image zooms slightly. Text turns white.",
+      "content": "Title in Serif. Date and Location in Sans (uppercase, tracking-wide)."
+    },
+    "timeline": {
+      "style": "The Ribbon of History. Vertical line in Gold. Nodes are diamond shaped.",
+      "interaction": "Active node glows. Content fades in as you scroll."
+    },
+    "admin_dashboard": {
+      "style": "High Density. Dark mode. Gold accents for active states only.",
+      "tables": "Compact. Row hover highlights in dark grey. Status badges are outlined, not filled."
+    },
+    "navigation": {
+      "style": "Glassmorphism (Crystal). Blur-xl. 1px bottom border in subtle gold.",
+      "links": "Uppercase, tracking-widest. Hover: Text turns Gold."
+    }
+  },
+  "motion": {
+    "speed": "Slow and Reverent. 0.7s duration.",
+    "easing": "ease-out",
+    "types": [
+      "Fade In Up (for text)",
+      "Slow Zoom (for images)",
+      "Parallax (for background sections)"
+    ]
+  },
+  "images": {
+    "hero_monstrance": {
+      "url": "https://images.unsplash.com/photo-1574786790595-94c66b8740fd",
+      "alt": "Golden Monstrance detail",
+      "usage": "Homepage Hero Background"
+    },
+    "map_europe": {
+      "url": "https://images.unsplash.com/photo-1577086664693-894d8405334a",
+      "alt": "Vintage Map of Europe",
+      "usage": "Miracles by Country Section Background"
+    },
+    "science_lab": {
+      "url": "https://images.unsplash.com/photo-1631816285219-c6af3851e360",
+      "alt": "Scientific Research Microscope",
+      "usage": "Scientific Evidence Section"
+    },
+    "saint_stained_glass": {
+      "url": "https://images.unsplash.com/photo-1662161422899-bb393b6fe6b9",
+      "alt": "Stained Glass Saint",
+      "usage": "About Us / Inspiration Section"
+    },
+    "manuscript": {
+      "url": "https://images.unsplash.com/photo-1766415007388-ce128e47fbe9",
+      "alt": "Ancient Manuscript",
+      "usage": "Documents / History Section"
+    },
+    "church_interior": {
+      "url": "https://images.unsplash.com/photo-1611265200918-d84a293a3a12",
+      "alt": "Basilica Interior",
+      "usage": "Footer Background or General Texture"
+    }
+  },
+  "universal_guidelines": [
+    "Do not use gradients for backgrounds. Use solid dark colors or subtle textures.",
+    "Avoid 'tech' blues or purples. Stick to the Gold/Red/Dark palette.",
+    "Typography is the main visual element. Ensure high contrast.",
+    "Images must be treated like museum artifacts—high quality, often framed.",
+    "Mobile-first: Ensure touch targets are large enough (44px+), but keep the aesthetic refined.",
+    "Accessibility: Gold text on dark background must pass WCAG AA (check contrast). If not, use a lighter gold/cream.",
+    "No 'AI Slop' icons. Use Phosphor Icons (Thin or Light weight) for a refined look."
+  ],
+  "instructions_to_main_agent": "You are building a digital sanctuary. Every pixel should feel intentional. Use the provided image URLs for the respective sections. Implement the 'Bento Grid' for the miracle list. Use 'Lenis' for smooth scrolling if possible, or at least 'scroll-behavior: smooth'. For the Admin, keep it functional but strictly within the Dark/Gold theme."
+}
