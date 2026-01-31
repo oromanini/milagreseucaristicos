@@ -475,14 +475,14 @@ async def get_json_template():
                         "historical_context": "During the celebration of mass in Lanciano...",
                         "phenomenon_description": "The host transformed into flesh and the wine into blood...",
                         "church_verdict": "Officially recognized by the Catholic Church",
-                        "summary": null
+                        "summary": None
                     },
                     "es": {
                         "name": "Milagro de Lanciano",
                         "historical_context": "Durante la celebración de la misa en Lanciano...",
                         "phenomenon_description": "La hostia se transformó en carne y el vino en sangre...",
                         "church_verdict": "Reconocido oficialmente por la Iglesia Católica",
-                        "summary": null
+                        "summary": None
                     }
                 }
             }
