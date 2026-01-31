@@ -153,24 +153,24 @@ export const Home = () => {
           </div>
 
           <div className="flex flex-wrap gap-4 items-center">
-            <Select value={country} onValueChange={setCountry}>
+            <Select value={country || "all"} onValueChange={(v) => setCountry(v === "all" ? "" : v)}>
               <SelectTrigger className="w-[180px] bg-[#121214] border-[#27272A] text-[#E5E5E5]" data-testid="country-filter">
                 <SelectValue placeholder={t('allCountries')} />
               </SelectTrigger>
               <SelectContent className="bg-[#121214] border-[#27272A]">
-                <SelectItem value="" className="text-[#E5E5E5]">{t('allCountries')}</SelectItem>
+                <SelectItem value="all" className="text-[#E5E5E5]">{t('allCountries')}</SelectItem>
                 {filters.countries.map(c => (
                   <SelectItem key={c} value={c} className="text-[#E5E5E5]">{c}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            <Select value={century} onValueChange={setCentury}>
+            <Select value={century || "all"} onValueChange={(v) => setCentury(v === "all" ? "" : v)}>
               <SelectTrigger className="w-[180px] bg-[#121214] border-[#27272A] text-[#E5E5E5]" data-testid="century-filter">
                 <SelectValue placeholder={t('allCenturies')} />
               </SelectTrigger>
               <SelectContent className="bg-[#121214] border-[#27272A]">
-                <SelectItem value="" className="text-[#E5E5E5]">{t('allCenturies')}</SelectItem>
+                <SelectItem value="all" className="text-[#E5E5E5]">{t('allCenturies')}</SelectItem>
                 {filters.centuries.map(c => (
                   <SelectItem key={c} value={c} className="text-[#E5E5E5]">{t('century')} {c}</SelectItem>
                 ))}
