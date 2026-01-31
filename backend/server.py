@@ -467,7 +467,7 @@ async def get_json_template():
                     {"type": "image", "url": "https://example.com/image.jpg", "title": "Relíquia de Lanciano", "category": "current"}
                 ],
                 "references": [
-                    {"citation": "LINOLI, Odoardo. Ricerche istologiche, immunologiche e biochimiche sulla carne e sul sangue del Miracolo Eucaristico di Lanciano. 1971.", "url": null}
+                    {"citation": "LINOLI, Odoardo. Ricerche istologiche, immunologiche e biochimiche sulla carne e sul sangue del Miracolo Eucaristico di Lanciano. 1971.", "url": None}
                 ],
                 "translations": {
                     "en": {
