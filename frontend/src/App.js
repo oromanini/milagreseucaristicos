@@ -1,53 +1,102 @@
-import { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { Toaster } from "./components/ui/sonner";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { Home } from "./pages/Home";
+import { MiracleDetail } from "./pages/MiracleDetail";
+import { About } from "./pages/About";
+import { Login } from "./pages/Login";
+import { Dashboard } from "./pages/admin/Dashboard";
+import { MiracleForm } from "./pages/admin/MiracleForm";
+import { BulkImport } from "./pages/admin/BulkImport";
+import { Disclaimer, Privacy, Terms } from "./pages/Legal";
+import { Loader2 } from "lucide-react";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0B]">
+        <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+// Layout with Navbar and Footer
+const Layout = ({ children, showFooter = true }) => {
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
+    <div className="min-h-screen bg-[#0A0A0B] flex flex-col">
+      <Navbar />
+      <main className="flex-grow">
+        {children}
+      </main>
+      {showFooter && <Footer />}
     </div>
   );
 };
 
+function AppContent() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Layout><Home /></Layout>} />
+        <Route path="/miracle/:id" element={<Layout><MiracleDetail /></Layout>} />
+        <Route path="/about" element={<Layout><About /></Layout>} />
+        <Route path="/disclaimer" element={<Layout><Disclaimer /></Layout>} />
+        <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+        <Route path="/terms" element={<Layout><Terms /></Layout>} />
+        <Route path="/login" element={<Layout showFooter={false}><Login /></Layout>} />
+        
+        {/* Protected Admin Routes */}
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <Layout showFooter={false}><Dashboard /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/miracle/new" element={
+          <ProtectedRoute>
+            <Layout showFooter={false}><MiracleForm /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/miracle/:id" element={
+          <ProtectedRoute>
+            <Layout showFooter={false}><MiracleForm /></Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/import" element={
+          <ProtectedRoute>
+            <Layout showFooter={false}><BulkImport /></Layout>
+          </ProtectedRoute>
+        } />
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster position="bottom-right" />
+    </BrowserRouter>
+  );
+}
+
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
 
