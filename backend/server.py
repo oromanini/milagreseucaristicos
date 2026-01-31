@@ -276,7 +276,7 @@ async def create_miracle(data: MiracleCreate, user: dict = Depends(get_current_u
     miracle_doc["summary"] = None
     
     await db.miracles.insert_one(miracle_doc)
-    del miracle_doc["_id"] if "_id" in miracle_doc else None
+    miracle_doc.pop("_id", None)
     return miracle_doc
 
 @api_router.put("/miracles/{miracle_id}", response_model=MiracleResponse)
