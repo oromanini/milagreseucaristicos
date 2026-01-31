@@ -5,256 +5,183 @@
 @tailwind utilities;
 
 :root {
-    --bg-default: #0A0A0B;
-    --bg-paper: #121214;
-    --bg-overlay: rgba(10, 10, 11, 0.8);
-    --gold: #D4AF37;
-    --gold-dim: #A68A2D;
-    --gold-light: #F9E79F;
-    --blood-red: #720E1E;
-    --blood-red-dim: #4A0913;
-    --text-primary: #E5E5E5;
-    --text-secondary: #A1A1AA;
-    --text-muted: #52525B;
-    --border-subtle: #27272A;
-    --border-gold: rgba(212, 175, 55, 0.3);
+  --bg-default: #0A0A0B;
+  --bg-paper: #121214;
+  --gold: #D4AF37;
+  --gold-dim: #A68A2D;
+  --gold-light: #F9E79F;
+  --blood-red: #720E1E;
+  --text-primary: #E5E5E5;
+  --text-secondary: #A1A1AA;
+  --text-muted: #52525B;
+  --border-subtle: #27272A;
 }
 
 @layer base {
-    :root {
-        --background: 240 6% 4%;
-        --foreground: 0 0% 90%;
-        --card: 240 5% 7%;
-        --card-foreground: 0 0% 90%;
-        --popover: 240 5% 7%;
-        --popover-foreground: 0 0% 90%;
-        --primary: 43 75% 52%;
-        --primary-foreground: 240 6% 4%;
-        --secondary: 240 4% 14%;
-        --secondary-foreground: 0 0% 90%;
-        --muted: 240 4% 14%;
-        --muted-foreground: 240 4% 64%;
-        --accent: 240 4% 14%;
-        --accent-foreground: 0 0% 90%;
-        --destructive: 0 84% 60%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 4% 16%;
-        --input: 240 4% 16%;
-        --ring: 43 75% 52%;
-        --radius: 0.25rem;
-    }
+  :root {
+    --background: 240 6% 4%;
+    --foreground: 0 0% 90%;
+    --card: 240 5% 7%;
+    --card-foreground: 0 0% 90%;
+    --popover: 240 5% 7%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 43 75% 52%;
+    --primary-foreground: 240 6% 4%;
+    --secondary: 240 4% 14%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 4% 64%;
+    --accent: 240 4% 14%;
+    --accent-foreground: 0 0% 90%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 43 75% 52%;
+    --radius: 0.25rem;
+  }
 }
 
 * {
-    @apply border-border;
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Manrope', sans-serif;
-    background-color: var(--bg-default);
+  font-family: 'Manrope', sans-serif;
+  background-color: var(--bg-default);
+  color: var(--text-primary);
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', serif;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-default);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-subtle);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--gold-dim);
-}
-
-/* Gold text gradient */
 .text-gold-gradient {
-    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Gold border glow */
-.border-gold-glow {
-    border: 1px solid var(--border-gold);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
-}
-
-/* Card hover effect */
 .card-hover {
-    transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
 }
 
 .card-hover:hover {
-    box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
-    border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+  border-color: var(--gold);
 }
 
-/* Glassmorphism nav */
 .glass-nav {
-    background: rgba(10, 10, 11, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-gold);
+  background: rgba(10, 10, 11, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
 }
 
-/* Timeline styles */
 .timeline-line {
-    background: linear-gradient(180deg, transparent 0%, var(--gold) 10%, var(--gold) 90%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--gold) 10%, var(--gold) 90%, transparent 100%);
 }
 
 .timeline-node {
-    width: 12px;
-    height: 12px;
-    background: var(--bg-default);
-    border: 2px solid var(--gold);
-    transform: rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: var(--bg-default);
+  border: 2px solid var(--gold);
+  transform: rotate(45deg);
 }
 
 .timeline-node.active {
-    background: var(--gold);
-    box-shadow: 0 0 15px var(--gold);
+  background: var(--gold);
+  box-shadow: 0 0 15px var(--gold);
 }
 
-/* Fade in animation */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in-up {
-    animation: fadeInUp 0.7s ease-out forwards;
+  animation: fadeInUp 0.7s ease-out forwards;
 }
 
-/* Slow zoom animation */
 @keyframes slowZoom {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.1);
-    }
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
 }
 
 .animate-slow-zoom {
-    animation: slowZoom 20s ease-out forwards;
+  animation: slowZoom 20s ease-out forwards;
 }
 
-/* Badge styles */
 .badge-recognized {
-    background: rgba(212, 175, 55, 0.2);
-    color: var(--gold);
-    border: 1px solid var(--gold);
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--gold);
+  border: 1px solid var(--gold);
 }
 
 .badge-investigating {
-    background: rgba(114, 14, 30, 0.2);
-    color: #FF6B6B;
-    border: 1px solid var(--blood-red);
+  background: rgba(114, 14, 30, 0.2);
+  color: #FF6B6B;
+  border: 1px solid var(--blood-red);
 }
 
-/* Hero section */
 .hero-overlay {
-    background: linear-gradient(
-        to bottom,
-        rgba(10, 10, 11, 0.3) 0%,
-        rgba(10, 10, 11, 0.6) 50%,
-        rgba(10, 10, 11, 0.95) 100%
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 11, 0.3) 0%,
+    rgba(10, 10, 11, 0.6) 50%,
+    rgba(10, 10, 11, 0.95) 100%
+  );
 }
 
-/* Selection */
-::selection {
-    background: var(--gold);
-    color: var(--bg-default);
-}
-
-/* Focus ring */
-*:focus-visible {
-    outline: 2px solid var(--gold);
-    outline-offset: 2px;
-}
-
-/* Link hover */
-.link-gold {
-    position: relative;
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
-}
-
-.link-gold:hover {
-    color: var(--gold);
-}
-
-.link-gold::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--gold);
-    transition: width 0.3s ease;
-}
-
-.link-gold:hover::after {
-    width: 100%;
-}
-
-/* Section navigation */
 .section-nav-item {
-    @apply px-4 py-2 text-sm uppercase tracking-widest transition-all duration-300;
-    color: var(--text-muted);
-    border-left: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
 }
 
 .section-nav-item:hover,
 .section-nav-item.active {
-    color: var(--gold);
-    border-left-color: var(--gold);
-    background: rgba(212, 175, 55, 0.05);
+  color: var(--gold);
+  border-left-color: var(--gold);
+  background: rgba(212, 175, 55, 0.05);
 }
 
-/* Bento grid */
 .bento-grid {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 }
 
 @media (min-width: 1024px) {
-    .bento-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* Admin table */
 .admin-table tr:hover {
-    background: rgba(39, 39, 42, 0.5);
+  background: rgba(39, 39, 42, 0.5);
 }
 
-/* Toast styling */
-[data-sonner-toaster] {
-    --normal-bg: var(--bg-paper);
-    --normal-border: var(--border-subtle);
-    --normal-text: var(--text-primary);
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
