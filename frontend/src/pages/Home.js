@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MiracleCard } from '../components/MiracleCard';
@@ -26,34 +26,12 @@ export const Home = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, recognized: 0, investigating: 0, countries: 0 });
   
-  // Filter state
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
   const [century, setCentury] = useState('');
   const [showInvestigating, setShowInvestigating] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    fetchMiracles();
-  }, [search, country, century, showInvestigating]);
-
-  const fetchData = async () => {
-    try {
-      const [filtersRes, statsRes] = await Promise.all([
-        axios.get(`${API}/filters`),
-        axios.get(`${API}/stats`)
-      ]);
-      setFilters(filtersRes.data);
-      setStats(statsRes.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const fetchMiracles = async () => {
+  const fetchMiracles = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -69,7 +47,27 @@ export const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, country, century, showInvestigating]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [filtersRes, statsRes] = await Promise.all([
+          axios.get(`${API}/filters`),
+          axios.get(`${API}/stats`)
+        ]);
+        setFilters(filtersRes.data);
+        setStats(statsRes.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    fetchMiracles();
+  }, [fetchMiracles]);
 
   const scrollToMiracles = () => {
     document.getElementById('miracles-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -77,9 +75,7 @@ export const Home = () => {
 
   return (
     <div className="min-h-screen" data-testid="home-page">
-      {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
-        {/* Background Image */}
         <div className="absolute inset-0">
           <img
             src={HERO_IMAGE}
@@ -89,7 +85,6 @@ export const Home = () => {
           <div className="hero-overlay absolute inset-0" />
         </div>
 
-        {/* Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in-up">
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#E5E5E5] mb-4">
             {t('heroTitle')}
@@ -109,7 +104,6 @@ export const Home = () => {
           </Button>
         </div>
 
-        {/* Scroll indicator */}
         <button
           onClick={scrollToMiracles}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#A1A1AA] animate-bounce"
@@ -122,43 +116,31 @@ export const Home = () => {
         </button>
       </section>
 
-      {/* Stats Section */}
       <section className="bg-[#121214] py-12 border-y border-[#27272A]" data-testid="stats-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
               <div className="font-serif text-3xl text-[#D4AF37]">{stats.total}</div>
-              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">
-                {t('miracles')}
-              </div>
+              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">{t('miracles')}</div>
             </div>
             <div className="text-center">
               <div className="font-serif text-3xl text-[#D4AF37]">{stats.recognized}</div>
-              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">
-                {t('recognized')}
-              </div>
+              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">{t('recognized')}</div>
             </div>
             <div className="text-center">
               <div className="font-serif text-3xl text-[#D4AF37]">{stats.investigating}</div>
-              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">
-                {t('investigating')}
-              </div>
+              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">{t('investigating')}</div>
             </div>
             <div className="text-center">
               <div className="font-serif text-3xl text-[#D4AF37]">{stats.countries}</div>
-              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">
-                {t('allCountries').replace('Todos os ', '').replace('All ', '').replace('Todos los ', '')}
-              </div>
+              <div className="text-[#A1A1AA] text-xs uppercase tracking-widest mt-1">Países</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Miracles Section */}
       <section id="miracles-section" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto" data-testid="miracles-section">
-        {/* Filters */}
         <div className="mb-12 space-y-6" data-testid="filters-section">
-          {/* Search */}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#52525B]" />
             <Input
@@ -170,7 +152,6 @@ export const Home = () => {
             />
           </div>
 
-          {/* Filter row */}
           <div className="flex flex-wrap gap-4 items-center">
             <Select value={country} onValueChange={setCountry}>
               <SelectTrigger className="w-[180px] bg-[#121214] border-[#27272A] text-[#E5E5E5]" data-testid="country-filter">
@@ -210,7 +191,6 @@ export const Home = () => {
           </div>
         </div>
 
-        {/* Miracles Grid */}
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
@@ -218,9 +198,6 @@ export const Home = () => {
         ) : miracles.length === 0 ? (
           <div className="text-center py-20" data-testid="no-results">
             <p className="text-[#A1A1AA] text-lg">{t('noResults')}</p>
-            <p className="text-[#52525B] text-sm mt-2">
-              {t('showInvestigating')} {!showInvestigating && '↑'}
-            </p>
           </div>
         ) : (
           <div className="bento-grid" data-testid="miracles-grid">
