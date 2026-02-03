@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# Instala compiladores e dependências de sistema necessárias.
+# Instala ferramentas de compilação
 RUN apt-get update && apt-get install -y \
     build-essential \
     libffi-dev \
@@ -20,9 +20,10 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip
 
+# Instala as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Confirmado que seu arquivo é server.py
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 server:app
+# MUDANÇA: Usando uvicorn direto (já que gunicorn não está instalado)
+CMD exec uvicorn server:app --host 0.0.0.0 --port $PORT
