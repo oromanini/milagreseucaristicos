@@ -1,28 +1,27 @@
-# Estágio 1: Build da aplicação
+# Estágio 1: Build (Usando Yarn)
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copia os arquivos de dependência
-COPY package*.json ./
+# Copia os arquivos de definição de dependências
+COPY package.json yarn.lock ./
 
-# --- A MÁGICA ESTÁ AQUI ---
-# O flag '--legacy-peer-deps' obriga o React 19 a instalar
-# mesmo que o react-scripts reclame que não suporta ele ainda.
-RUN npm install --legacy-peer-deps
+# MUDANÇA: Usamos YARN em vez de NPM
+# O network-timeout evita falhas se a internet do build oscilar
+RUN yarn install --network-timeout 100000
 
 COPY . .
 
-# Executa o build (gera a pasta 'build')
-RUN npm run build
+# Executa o build usando o script do package.json ("craco build")
+RUN yarn build
 
-# Estágio 2: Servidor Web
+# Estágio 2: Servidor Nginx (Leve e Rápido)
 FROM nginx:alpine
 
-# Copia a pasta 'build' (que é o padrão do Create React App/Craco)
+# Copia a pasta 'build' gerada pelo Craco
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Ajusta a porta para 8080 (Google Cloud Run)
+# Configura a porta 8080 para o Cloud Run
 RUN sed -i 's/listen[[:space:]]*80;/listen 8080;/g' /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
