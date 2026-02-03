@@ -19,14 +19,14 @@ jobs:
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'milagres-backend'
-          region: 'southamerica-east1'
+          region: 'us-central1'
           source: './backend'
-          flags: '--allow-unauthenticated --max-instances=1'
+          flags: '--allow-unauthenticated --max-instances=1 --memory=512Mi'
 
       - name: Deploy Frontend
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'milagres-frontend'
-          region: 'southamerica-east1'
+          region: 'us-central1'
           source: './frontend'
-          flags: '--allow-unauthenticated --max-instances=1'
+          flags: '--allow-unauthenticated --max-instances=1 --memory=512Mi'
