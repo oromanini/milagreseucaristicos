@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Button } from '../components/ui/button';
-import { ScrollArea } from '../components/ui/scroll-area';
 import { Separator } from '../components/ui/separator';
 import {
   ArrowLeft,
@@ -41,7 +39,6 @@ export const MiracleDetail = () => {
   const [miracle, setMiracle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
-  const [generatingSummary, setGeneratingSummary] = useState(false);
 
   useEffect(() => {
     fetchMiracle();
@@ -66,19 +63,6 @@ export const MiracleDetail = () => {
     return miracle?.[field];
   };
 
-  const generateSummary = async () => {
-    setGeneratingSummary(true);
-    try {
-      const response = await axios.post(`${API}/miracles/${id}/generate-summary?language=${language}`);
-      setMiracle(prev => ({ ...prev, summary: response.data.summary }));
-      toast.success(t('success'));
-    } catch (error) {
-      console.error('Error generating summary:', error);
-      toast.error(t('error'));
-    } finally {
-      setGeneratingSummary(false);
-    }
-  };
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId);
@@ -171,7 +155,7 @@ export const MiracleDetail = () => {
               </div>
             </header>
 
-            {/* AI Summary */}
+            {/* Summary */}
             {(miracle.summary || getTranslated('summary')) && (
               <section className="bg-[#121214] border border-[rgba(212,175,55,0.3)] p-6 animate-fade-in-up" data-testid="summary-section">
                 <div className="flex items-center gap-2 mb-4">
@@ -183,26 +167,6 @@ export const MiracleDetail = () => {
                 </p>
               </section>
             )}
-
-            <Button
-              onClick={generateSummary}
-              disabled={generatingSummary}
-              variant="outline"
-              className="border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10"
-              data-testid="generate-summary-btn"
-            >
-              {generatingSummary ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {t('generatingSummary')}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  {t('generateSummary')}
-                </>
-              )}
-            </Button>
 
             {/* Overview Section */}
             <section id="overview" className="scroll-mt-24 animate-fade-in-up" data-testid="section-overview">

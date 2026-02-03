@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class EucharisticMiraclesAPITester:
-    def __init__(self, base_url="https://eucharistic-miracles-2.preview.emergentagent.com/api"):
+    def __init__(self, base_url="http://localhost:8000/api"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
