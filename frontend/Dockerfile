@@ -1,10 +1,11 @@
-# Estágio 1: Build (Usando Yarn)
+# Estágio 1: Build (Robustez Máxima)
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copia os arquivos de definição de dependências
-COPY package.json yarn.lock ./
+# MUDANÇA CRÍTICA: Copiamos apenas o package.json inicialmente.
+# Isso evita o erro "file not found" se o yarn.lock não existir.
+COPY package.json ./
 
 # MUDANÇA: Usamos YARN em vez de NPM
 # O network-timeout evita falhas se a internet do build oscilar
