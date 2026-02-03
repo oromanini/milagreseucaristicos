@@ -6,7 +6,6 @@ Site milagreseucaristicos.com.br - Blog documental católico sobre milagres euca
 ## Arquitetura
 - **Backend**: FastAPI + MongoDB
 - **Frontend**: React + Tailwind CSS + Shadcn/UI
-- **IA**: Gemini 3 Flash (via Emergent LLM Key)
 - **Auth**: JWT
 
 ## User Personas
@@ -33,7 +32,6 @@ Site milagreseucaristicos.com.br - Blog documental católico sobre milagres euca
 - [x] Autenticação JWT
 - [x] Upload de arquivos (imagens/PDFs)
 - [x] Importação bulk de milagres
-- [x] Geração de resumo via IA (Gemini 3 Flash)
 - [x] Filtros e estatísticas
 
 ## Backlog (P0/P1/P2)

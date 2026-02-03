@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 import jwt
 import bcrypt
 import shutil
-from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -28,8 +27,6 @@ db = client[os.environ['DB_NAME']]
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default-secret-key')
 JWT_ALGORITHM = "HS256"
 
-# Emergent LLM Key
-EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
 # Create uploads directory
 UPLOAD_DIR = ROOT_DIR / "uploads"
@@ -147,10 +144,6 @@ class MiracleResponse(MiracleBase):
 
 class BulkImportRequest(BaseModel):
     miracles: List[MiracleCreate]
-
-class SummaryRequest(BaseModel):
-    miracle_id: str
-    language: str = "pt"
 
 # ==================== AUTH HELPERS ====================
 
@@ -345,65 +338,6 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(get_cur
         "original_name": file.filename,
         "url": f"/api/uploads/{filename}"
     }
-
-# ==================== AI SUMMARY ====================
-
-@api_router.post("/miracles/{miracle_id}/generate-summary")
-async def generate_summary(miracle_id: str, language: str = "pt"):
-    miracle = await db.miracles.find_one({"id": miracle_id}, {"_id": 0})
-    if not miracle:
-        raise HTTPException(status_code=404, detail="Miracle not found")
-    
-    if not EMERGENT_LLM_KEY:
-        raise HTTPException(status_code=500, detail="LLM API key not configured")
-    
-    # Build context for AI
-    context = f"""
-    Nome do Milagre: {miracle.get('name', '')}
-    Local: {miracle.get('city', '')}, {miracle.get('country', '')}
-    Século: {miracle.get('century', '')}
-    Status: {miracle.get('status', '')}
-    Contexto Histórico: {miracle.get('historical_context', '')}
-    Descrição do Fenômeno: {miracle.get('phenomenon_description', '')}
-    Parecer da Igreja: {miracle.get('church_verdict', '')}
-    """
-    
-    lang_instruction = {
-        "pt": "Responda em português brasileiro.",
-        "en": "Respond in English.",
-        "es": "Responda en español."
-    }.get(language, "Responda em português brasileiro.")
-    
-    prompt = f"""
-    {lang_instruction}
-    
-    Você é um especialista em história da Igreja Católica. Com base nas informações abaixo, 
-    gere um resumo claro, objetivo e pastoral sobre este milagre eucarístico. 
-    O resumo deve ter no máximo 3 parágrafos e ser acessível ao público leigo.
-    
-    {context}
-    """
-    
-    try:
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"miracle-summary-{miracle_id}",
-            system_message="Você é um especialista em milagres eucarísticos da Igreja Católica."
-        ).with_model("gemini", "gemini-3-flash-preview")
-        
-        user_message = UserMessage(text=prompt)
-        summary = await chat.send_message(user_message)
-        
-        # Save summary to database
-        await db.miracles.update_one(
-            {"id": miracle_id},
-            {"$set": {"summary": summary, "updated_at": datetime.now(timezone.utc).isoformat()}}
-        )
-        
-        return {"summary": summary}
-    except Exception as e:
-        logger.error(f"Error generating summary: {e}")
-        raise HTTPException(status_code=500, detail=f"Error generating summary: {str(e)}")
 
 # ==================== FILTERS DATA ====================
 

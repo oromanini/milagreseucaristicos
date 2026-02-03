@@ -37,8 +37,6 @@ const translations = {
     media: 'Mídia',
     documents: 'Documentos',
     references: 'Referências',
-    generateSummary: 'Gerar Resumo com IA',
-    generatingSummary: 'Gerando resumo...',
     summary: 'Resumo',
     
     // Status
@@ -120,8 +118,6 @@ const translations = {
     media: 'Media',
     documents: 'Documents',
     references: 'References',
-    generateSummary: 'Generate AI Summary',
-    generatingSummary: 'Generating summary...',
     summary: 'Summary',
     
     // Status
@@ -203,8 +199,6 @@ const translations = {
     media: 'Medios',
     documents: 'Documentos',
     references: 'Referencias',
-    generateSummary: 'Generar Resumen con IA',
-    generatingSummary: 'Generando resumen...',
     summary: 'Resumen',
     
     // Status
