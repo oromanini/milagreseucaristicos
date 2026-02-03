@@ -1,26 +1,26 @@
-FROM python:3.10-slim
+FROM python:3.10
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# --- CORREÇÃO AQUI ---
-# Instala compiladores e dependências de sistema necessárias
-# para 'cryptography', 'pandas', 'jq' e outros.
+# Instala compiladores e dependências de sistema necessárias.
 RUN apt-get update && apt-get install -y \
     build-essential \
     libffi-dev \
     libssl-dev \
-    python3-dev \
-    gcc \
+    autoconf \
+    automake \
+    libtool \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
-# ---------------------
 
 COPY requirements.txt .
 
-# Aumentei o timeout porque pandas e numpy demoram para instalar
-RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt
+RUN pip install --upgrade pip
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
