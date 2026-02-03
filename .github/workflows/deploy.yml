@@ -6,6 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,14 +16,21 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
+      # DEPLOY BACKEND (Configurado com Banco e CORS)
       - name: Deploy Backend
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'milagres-backend'
           region: 'us-central1'
           source: './backend'
+          env_vars: |
+            MONGO_URL=${{ secrets.MONGO_URI }}
+            DB_NAME=milagres-db
+            CORS_ORIGINS=*
+            JWT_SECRET=segredo-seguro-viasacra
           flags: '--allow-unauthenticated --max-instances=1 --memory=512Mi'
 
+      # DEPLOY FRONTEND
       - name: Deploy Frontend
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
