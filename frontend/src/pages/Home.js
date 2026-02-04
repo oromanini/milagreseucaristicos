@@ -105,16 +105,18 @@ export const Home = () => {
           </Button>
         </div>
 
-        <button
-          onClick={scrollToMiracles}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-[color:var(--text-secondary)] animate-bounce"
-          data-testid="scroll-indicator"
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-xs uppercase tracking-widest mb-2">{t('scrollToDiscover')}</span>
-            <ChevronDown className="w-6 h-6" />
-          </div>
-        </button>
+        <div className="absolute bottom-8 inset-x-0 flex justify-center">
+          <button
+            onClick={scrollToMiracles}
+            className="text-center text-[color:var(--text-secondary)] animate-bounce"
+            data-testid="scroll-indicator"
+          >
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-xs uppercase tracking-widest">{t('scrollHint')}</span>
+              <ChevronDown className="w-6 h-6" />
+            </div>
+          </button>
+        </div>
 
         <MusicPlayer className="absolute bottom-20 left-6 right-6 md:left-auto md:right-10" />
       </section>
