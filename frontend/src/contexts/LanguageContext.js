@@ -83,16 +83,6 @@ const translations = {
     success: 'Sucesso',
     noResults: 'Nenhum resultado encontrado',
     century: 'Século',
-
-    // Via Sacra
-    viaSacraTitle: 'Via Sacra',
-    viaSacraSubtitle: 'Escolha como deseja viver a Via Sacra hoje.',
-    viaSacraSoloTitle: 'Fazer Via Sacra sozinho',
-    viaSacraSoloDescription: 'Inicie agora mesmo a via sacra solo',
-    viaSacraSoloButton: 'Fazer Via Sacra sozinho',
-    viaSacraGroupTitle: 'Fazer Via Sacra em grupo',
-    viaSacraGroupDescription: 'Crie uma sala para ser anfitrião ou entre como orante com a senha.',
-    viaSacraGroupButton: 'Fazer via sacra em grupo',
   },
   en: {
     // Navigation
@@ -174,16 +164,6 @@ const translations = {
     success: 'Success',
     noResults: 'No results found',
     century: 'Century',
-
-    // Via Sacra
-    viaSacraTitle: 'Stations of the Cross',
-    viaSacraSubtitle: 'Choose how you want to experience the Stations of the Cross today.',
-    viaSacraSoloTitle: 'Do the Stations of the Cross alone',
-    viaSacraSoloDescription: 'Start the Stations of the Cross solo right now',
-    viaSacraSoloButton: 'Do the Stations of the Cross alone',
-    viaSacraGroupTitle: 'Do the Stations of the Cross in a group',
-    viaSacraGroupDescription: 'Create a room to host or join as a participant with the password.',
-    viaSacraGroupButton: 'Do the Stations of the Cross in a group',
   },
   es: {
     // Navigation
@@ -265,16 +245,6 @@ const translations = {
     success: 'Éxito',
     noResults: 'No se encontraron resultados',
     century: 'Siglo',
-
-    // Via Sacra
-    viaSacraTitle: 'Vía Crucis',
-    viaSacraSubtitle: 'Elige cómo deseas vivir el Vía Crucis hoy.',
-    viaSacraSoloTitle: 'Hacer el Vía Crucis solo',
-    viaSacraSoloDescription: 'Inicia el Vía Crucis en solitario ahora mismo',
-    viaSacraSoloButton: 'Hacer el Vía Crucis solo',
-    viaSacraGroupTitle: 'Hacer el Vía Crucis en grupo',
-    viaSacraGroupDescription: 'Crea una sala para ser anfitrión o entra como orante con la contraseña.',
-    viaSacraGroupButton: 'Hacer el Vía Crucis en grupo',
   }
 };
 
