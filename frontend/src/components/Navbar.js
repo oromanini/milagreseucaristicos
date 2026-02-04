@@ -38,7 +38,11 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3" data-testid="navbar-logo">
-            <span className="text-2xl">✝️</span>
+            <img
+              src={`${process.env.PUBLIC_URL}/logo.png`}
+              alt="Logo Milagres Eucarísticos"
+              className="h-9 w-9 object-contain"
+            />
             <span className="font-serif text-lg text-gold-gradient hidden sm:block">
               Milagres Eucarísticos
             </span>
@@ -51,7 +55,7 @@ export const Navbar = () => {
                 key={link.path}
                 to={link.path}
                 className={`uppercase text-xs tracking-widest transition-colors duration-300 ${
-                  isActive(link.path) ? 'text-[#D4AF37]' : 'text-[#A1A1AA] hover:text-[#D4AF37]'
+                  isActive(link.path) ? 'text-[color:var(--gold)]' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--gold)]'
                 }`}
                 data-testid={`nav-link-${link.path.replace('/', '') || 'home'}`}
               >
@@ -63,7 +67,7 @@ export const Navbar = () => {
               <Link
                 to="/admin"
                 className={`uppercase text-xs tracking-widest transition-colors duration-300 ${
-                  location.pathname.startsWith('/admin') ? 'text-[#D4AF37]' : 'text-[#A1A1AA] hover:text-[#D4AF37]'
+                  location.pathname.startsWith('/admin') ? 'text-[color:var(--gold)]' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--gold)]'
                 }`}
                 data-testid="nav-link-admin"
               >
@@ -77,7 +81,7 @@ export const Navbar = () => {
             {/* Language Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-[#A1A1AA] hover:text-[#D4AF37]" data-testid="language-selector">
+                <Button variant="ghost" size="sm" className="text-[color:var(--text-secondary)] hover:text-[color:var(--gold)]" data-testid="language-selector">
                   <Globe className="w-4 h-4 mr-2" />
                   <span>{currentLang?.flag}</span>
                   <ChevronDown className="w-3 h-3 ml-1" />
@@ -88,7 +92,7 @@ export const Navbar = () => {
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => changeLanguage(lang.code)}
-                    className={`cursor-pointer ${language === lang.code ? 'text-[#D4AF37]' : 'text-[#E5E5E5]'}`}
+                    className={`cursor-pointer ${language === lang.code ? 'text-[color:var(--gold)]' : 'text-[color:var(--text-primary)]'}`}
                     data-testid={`language-option-${lang.code}`}
                   >
                     <span className="mr-2">{lang.flag}</span>
@@ -104,7 +108,7 @@ export const Navbar = () => {
                 variant="ghost"
                 size="sm"
                 onClick={logout}
-                className="text-[#A1A1AA] hover:text-[#D4AF37] uppercase text-xs tracking-widest"
+                className="text-[color:var(--text-secondary)] hover:text-[color:var(--gold)] uppercase text-xs tracking-widest"
                 data-testid="logout-btn"
               >
                 {t('logout')}
@@ -114,7 +118,7 @@ export const Navbar = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10 uppercase text-xs tracking-widest"
+                  className="border-[#D4AF37]/30 text-[color:var(--gold)] hover:bg-[#D4AF37]/10 uppercase text-xs tracking-widest"
                 >
                   {t('login')}
                 </Button>
@@ -124,7 +128,7 @@ export const Navbar = () => {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-[#E5E5E5]"
+            className="md:hidden text-[color:var(--text-primary)]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             data-testid="mobile-menu-btn"
           >
@@ -143,7 +147,7 @@ export const Navbar = () => {
                 to={link.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block uppercase text-sm tracking-widest ${
-                  isActive(link.path) ? 'text-[#D4AF37]' : 'text-[#A1A1AA]'
+                  isActive(link.path) ? 'text-[color:var(--gold)]' : 'text-[color:var(--text-secondary)]'
                 }`}
               >
                 {link.label}
@@ -154,7 +158,7 @@ export const Navbar = () => {
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block uppercase text-sm tracking-widest text-[#A1A1AA]"
+                className="block uppercase text-sm tracking-widest text-[color:var(--text-secondary)]"
               >
                 {t('admin')}
               </Link>
@@ -176,13 +180,13 @@ export const Navbar = () => {
               <Button
                 variant="ghost"
                 onClick={() => { logout(); setMobileMenuOpen(false); }}
-                className="w-full text-[#A1A1AA]"
+                className="w-full text-[color:var(--text-secondary)]"
               >
                 {t('logout')}
               </Button>
             ) : (
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full border-[#D4AF37]/30 text-[#D4AF37]">
+                <Button variant="outline" className="w-full border-[#D4AF37]/30 text-[color:var(--gold)]">
                   {t('login')}
                 </Button>
               </Link>

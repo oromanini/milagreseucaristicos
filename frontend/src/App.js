@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0B]">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
       </div>
     );
@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children }) => {
 // Layout with Navbar and Footer
 const Layout = ({ children, showFooter = true }) => {
   return (
-    <div className="min-h-screen bg-[#0A0A0B] flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         {children}
