@@ -17,7 +17,7 @@ const translations = {
     heroSubtitle: 'Fé e Ciência em Harmonia',
     heroDescription: 'Descubra os milagres eucarísticos reconhecidos pela Igreja Católica, documentados pela ciência e preservados pela história.',
     explore: 'Explorar Milagres',
-    scrollToDiscover: 'Role para descobrir',
+    scrollHint: 'Desça para explorar',
     
     // Filters
     searchPlaceholder: 'Buscar milagre...',
@@ -98,7 +98,7 @@ const translations = {
     heroSubtitle: 'Faith and Science in Harmony',
     heroDescription: 'Discover the Eucharistic miracles recognized by the Catholic Church, documented by science and preserved by history.',
     explore: 'Explore Miracles',
-    scrollToDiscover: 'Scroll to discover',
+    scrollHint: 'Scroll to explore',
     
     // Filters
     searchPlaceholder: 'Search miracle...',
@@ -179,7 +179,7 @@ const translations = {
     heroSubtitle: 'Fe y Ciencia en Armonía',
     heroDescription: 'Descubra los milagros eucarísticos reconocidos por la Iglesia Católica, documentados por la ciencia y preservados por la historia.',
     explore: 'Explorar Milagros',
-    scrollToDiscover: 'Desplácese para descubrir',
+    scrollHint: 'Desplácese para explorar',
     
     // Filters
     searchPlaceholder: 'Buscar milagro...',
