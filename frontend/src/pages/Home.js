@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { MiracleCard } from '../components/MiracleCard';
@@ -18,6 +18,7 @@ import { Search, ChevronDown, Loader2 } from 'lucide-react';
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1574786790595-94c66b8740fd';
+const HERO_AUDIO_VIDEO_ID = 'BYzT9zOJHF0';
 
 export const Home = () => {
   const { t } = useLanguage();
@@ -30,6 +31,9 @@ export const Home = () => {
   const [country, setCountry] = useState('');
   const [century, setCentury] = useState('');
   const [showInvestigating, setShowInvestigating] = useState(false);
+  const [isAudioReady, setIsAudioReady] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const audioPlayerRef = useRef(null);
 
   const fetchMiracles = useCallback(async () => {
     setLoading(true);
@@ -69,13 +73,69 @@ export const Home = () => {
     fetchMiracles();
   }, [fetchMiracles]);
 
+  useEffect(() => {
+    const initializePlayer = () => {
+      if (!window.YT || !window.YT.Player) return;
+      audioPlayerRef.current = new window.YT.Player('hero-audio-player', {
+        height: '0',
+        width: '0',
+        videoId: HERO_AUDIO_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => setIsAudioReady(true),
+          onStateChange: (event) => {
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              setIsAudioPlaying(true);
+            } else if (
+              event.data === window.YT.PlayerState.PAUSED ||
+              event.data === window.YT.PlayerState.ENDED
+            ) {
+              setIsAudioPlaying(false);
+            }
+          },
+        },
+      });
+    };
+
+    if (window.YT && window.YT.Player) {
+      initializePlayer();
+      return;
+    }
+
+    const existingScript = document.getElementById('youtube-iframe-api');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.id = 'youtube-iframe-api';
+      document.body.appendChild(script);
+    }
+
+    window.onYouTubeIframeAPIReady = initializePlayer;
+  }, []);
+
   const scrollToMiracles = () => {
     document.getElementById('miracles-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleAudioToggle = () => {
+    if (!audioPlayerRef.current) return;
+    if (isAudioPlaying) {
+      audioPlayerRef.current.pauseVideo();
+    } else {
+      audioPlayerRef.current.playVideo();
+    }
   };
 
   return (
     <div className="min-h-screen" data-testid="home-page">
       <section className="relative h-screen flex items-center justify-center overflow-hidden" data-testid="hero-section">
+        <div id="hero-audio-player" className="absolute h-0 w-0 overflow-hidden" aria-hidden="true" />
         <div className="absolute inset-0">
           <img
             src={HERO_IMAGE}
@@ -102,6 +162,21 @@ export const Home = () => {
           >
             {t('explore')}
           </Button>
+        </div>
+
+        <div className="absolute bottom-24 right-6 z-20">
+          <div className="flex items-center gap-3 rounded-full border border-[#27272A] bg-[#0A0A0B]/80 px-4 py-2 text-[#E5E5E5] backdrop-blur">
+            <span className="text-xs uppercase tracking-widest text-[#A1A1AA]">Música</span>
+            <button
+              type="button"
+              onClick={handleAudioToggle}
+              disabled={!isAudioReady}
+              aria-pressed={isAudioPlaying}
+              className="rounded-full border border-[#D4AF37] px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#D4AF37] transition hover:bg-[#D4AF37] hover:text-[#0A0A0B] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isAudioPlaying ? 'Pausar' : 'Tocar'}
+            </button>
+          </div>
         </div>
 
         <button
