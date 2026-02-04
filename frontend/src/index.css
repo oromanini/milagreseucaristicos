@@ -168,6 +168,24 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(212, 175, 55, 0.35);
 }
 
+.music-player-volume {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 639px) {
+  .music-player-volume {
+    flex: 1;
+  }
+
+  .music-player-slider {
+    max-width: 140px;
+  }
+}
+
 .music-player-slider::-webkit-slider-thumb {
   appearance: none;
   width: 14px;
