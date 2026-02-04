@@ -38,7 +38,11 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3" data-testid="navbar-logo">
-            <span className="text-2xl">✝️</span>
+            <img
+              src="/logo.png"
+              alt="Milagres Eucarísticos"
+              className="h-8 w-8 object-contain"
+            />
             <span className="font-serif text-lg text-gold-gradient hidden sm:block">
               Milagres Eucarísticos
             </span>
