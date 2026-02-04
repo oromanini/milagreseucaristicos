@@ -9,6 +9,16 @@ export const MusicPlayer = ({ className = '' }) => {
   const audioRef = useRef(null);
   const trackSrc = '/anima_christi.mp3';
 
+  const updateVolume = (nextVolume) => {
+    const clampedVolume = Math.min(100, Math.max(0, nextVolume));
+    setVolume(clampedVolume);
+
+    if (audioRef.current) {
+      audioRef.current.volume = clampedVolume / 100;
+      audioRef.current.muted = clampedVolume === 0;
+    }
+  };
+
   const togglePlayback = () => {
     setIsPlaying((current) => !current);
   };
@@ -18,6 +28,7 @@ export const MusicPlayer = ({ className = '' }) => {
       return;
     }
     audioRef.current.volume = volume / 100;
+    audioRef.current.muted = volume === 0;
   }, [volume]);
 
   useEffect(() => {
@@ -26,6 +37,8 @@ export const MusicPlayer = ({ className = '' }) => {
     }
 
     if (isPlaying) {
+      audioRef.current.volume = volume / 100;
+      audioRef.current.muted = volume === 0;
       audioRef.current.play().catch((error) => {
         console.error('Erro ao tocar áudio:', error);
         setIsPlaying(false);
@@ -41,7 +54,13 @@ export const MusicPlayer = ({ className = '' }) => {
         <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
           {trackName}
         </p>
-        <audio ref={audioRef} src={trackSrc} onEnded={() => setIsPlaying(false)} preload="metadata" />
+        <audio
+          ref={audioRef}
+          src={trackSrc}
+          onEnded={() => setIsPlaying(false)}
+          onLoadedMetadata={() => updateVolume(volume)}
+          preload="metadata"
+        />
         <div className="flex items-center gap-3 w-full">
           <Button
             type="button"
@@ -60,7 +79,7 @@ export const MusicPlayer = ({ className = '' }) => {
               min="0"
               max="100"
               value={volume}
-              onChange={(event) => setVolume(Number(event.target.value))}
+              onChange={(event) => updateVolume(Number(event.target.value))}
               className="music-player-slider"
               aria-label="Volume"
             />
