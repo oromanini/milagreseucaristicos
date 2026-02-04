@@ -89,10 +89,10 @@ export const Home = () => {
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#E5E5E5] mb-4">
             {t('heroTitle')}
           </h1>
-          <p className="text-[#D4AF37] text-lg sm:text-xl font-serif mb-6">
+          <p className="text-[#F7C948] text-lg sm:text-xl font-serif mb-6">
             {t('heroSubtitle')}
           </p>
-          <p className="text-[#A1A1AA] text-base sm:text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8">
             {t('heroDescription')}
           </p>
           <Button
