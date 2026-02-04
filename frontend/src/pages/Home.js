@@ -87,7 +87,7 @@ export const Home = () => {
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-gold-gradient mb-4 pb-1 leading-[1.15]">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-gold-gradient mb-4 pb-2 pt-1 leading-[1.2] inline-block">
             {t('heroTitle')}
           </h1>
           <p className="text-[color:var(--gold)] text-lg sm:text-xl font-serif mb-6">
@@ -105,7 +105,7 @@ export const Home = () => {
           </Button>
         </div>
 
-        <div className="absolute bottom-8 inset-x-0 flex justify-center">
+        <div className="absolute bottom-6 sm:bottom-8 inset-x-0 flex justify-center">
           <button
             onClick={scrollToMiracles}
             className="text-center text-[color:var(--text-secondary)] animate-bounce"
@@ -118,7 +118,7 @@ export const Home = () => {
           </button>
         </div>
 
-        <MusicPlayer className="absolute bottom-20 left-6 right-6 md:left-auto md:right-10" />
+        <MusicPlayer className="absolute bottom-24 sm:bottom-20 left-6 right-6 md:left-auto md:right-10" />
       </section>
 
       <section className="bg-[#121214] py-12 border-y border-[#27272A]" data-testid="stats-section">
