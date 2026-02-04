@@ -87,13 +87,13 @@ export const Home = () => {
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-gold-gradient mb-4">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-gold-gradient mb-4 pb-1 leading-[1.15]">
             {t('heroTitle')}
           </h1>
           <p className="text-[color:var(--gold)] text-lg sm:text-xl font-serif mb-6">
             {t('heroSubtitle')}
           </p>
-          <p className="text-[color:var(--text-secondary)] text-base sm:text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8">
             {t('heroDescription')}
           </p>
           <Button
