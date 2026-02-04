@@ -1,43 +1,42 @@
-import { Play } from 'lucide-react';
+import { Pause, Play } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 
 export const MusicPlayer = ({ className = '' }) => {
-  const trackName = 'Milagres Eucarísticos (Trilha Oficial)';
-  const youtubeUrl = 'https://www.youtube.com/watch?v=BYzT9zOJHF0';
-  const embedUrl = 'https://www.youtube.com/embed/BYzT9zOJHF0?rel=0';
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(70);
+  const trackName = 'Anima Christi';
+
+  const togglePlayback = () => {
+    setIsPlaying((current) => !current);
+  };
 
   return (
     <div className={`music-player ${className}`} data-testid="music-player">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.3em]">Música</p>
-          <p className="text-[color:var(--text-primary)] text-sm font-medium truncate max-w-[200px]">
-            {trackName}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            asChild
-            type="button"
-            variant="outline"
-            size="icon"
-            className="border-[#D4AF37]/40 text-[color:var(--gold)] hover:bg-[#D4AF37]/10"
-          >
-            <a href={youtubeUrl} target="_blank" rel="noreferrer" aria-label="Abrir música no YouTube">
-              <Play className="w-4 h-4" />
-            </a>
-          </Button>
-        </div>
-      </div>
-
-      <div className="mt-3 overflow-hidden rounded-md border border-[#D4AF37]/20 bg-black/40">
-        <div className="aspect-video w-full">
-          <iframe
-            title="Milagres Eucarísticos"
-            src={embedUrl}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+      <div className="flex flex-wrap items-center gap-4">
+        <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
+          {trackName}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={togglePlayback}
+          className="border-[#D4AF37]/40 text-[color:var(--gold)] hover:bg-[#D4AF37]/10"
+          aria-label={isPlaying ? 'Pausar' : 'Tocar'}
+        >
+          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        </Button>
+        <div className="flex items-center gap-3 flex-1 min-w-[160px]">
+          <span className="text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.2em]">Volume</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={(event) => setVolume(Number(event.target.value))}
+            className="music-player-slider"
+            aria-label="Volume"
           />
         </div>
       </div>
