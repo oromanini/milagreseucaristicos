@@ -41,7 +41,7 @@ export const Navbar = () => {
             <img
               src="/logo.png"
               alt="Milagres Eucarísticos"
-              className="h-8 w-8 object-contain"
+              className="h-12 w-12 object-contain"
             />
             <span className="font-serif text-lg text-gold-gradient hidden sm:block">
               Milagres Eucarísticos
