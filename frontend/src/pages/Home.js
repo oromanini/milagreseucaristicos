@@ -18,7 +18,7 @@ import { MusicPlayer } from '../components/MusicPlayer';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1574786790595-94c66b8740fd';
+const HERO_IMAGE = '/bg.png';
 
 export const Home = () => {
   const { t } = useLanguage();
@@ -107,7 +107,7 @@ export const Home = () => {
 
         <button
           onClick={scrollToMiracles}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[color:var(--text-secondary)] animate-bounce"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center text-[color:var(--text-secondary)] animate-bounce"
           data-testid="scroll-indicator"
         >
           <div className="flex flex-col items-center">
