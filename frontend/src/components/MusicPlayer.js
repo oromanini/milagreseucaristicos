@@ -1,15 +1,39 @@
 import { Pause, Play } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 
 export const MusicPlayer = ({ className = '' }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
   const trackName = 'Anima Christi';
+  const audioRef = useRef(null);
+  const trackSrc = '/anima_christi.mp3';
 
   const togglePlayback = () => {
     setIsPlaying((current) => !current);
   };
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      return;
+    }
+    audioRef.current.volume = volume / 100;
+  }, [volume]);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      return;
+    }
+
+    if (isPlaying) {
+      audioRef.current.play().catch((error) => {
+        console.error('Erro ao tocar áudio:', error);
+        setIsPlaying(false);
+      });
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
 
   return (
     <div className={`music-player ${className}`} data-testid="music-player">
@@ -17,6 +41,7 @@ export const MusicPlayer = ({ className = '' }) => {
         <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
           {trackName}
         </p>
+        <audio ref={audioRef} src={trackSrc} onEnded={() => setIsPlaying(false)} preload="metadata" />
         <Button
           type="button"
           variant="outline"
