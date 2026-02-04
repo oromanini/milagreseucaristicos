@@ -106,7 +106,7 @@ export const Home = () => {
 
         <button
           onClick={scrollToMiracles}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#A1A1AA] animate-bounce"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#A1A1AA] text-center animate-bounce"
           data-testid="scroll-indicator"
         >
           <div className="flex flex-col items-center">
