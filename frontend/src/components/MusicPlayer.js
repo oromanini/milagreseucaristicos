@@ -37,7 +37,7 @@ export const MusicPlayer = ({ className = '' }) => {
 
   return (
     <div className={`music-player ${className}`} data-testid="music-player">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4">
         <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
           {trackName}
         </p>
@@ -52,7 +52,7 @@ export const MusicPlayer = ({ className = '' }) => {
         >
           {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
         </Button>
-        <div className="flex items-center gap-3 flex-1 min-w-[160px]">
+        <div className="flex items-center gap-3 w-full sm:flex-1 sm:min-w-[160px]">
           <span className="text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.2em]">Volume</span>
           <input
             type="range"
