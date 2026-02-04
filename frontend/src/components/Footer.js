@@ -11,7 +11,11 @@ export const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">✝️</span>
+              <img
+                src="/logo.png"
+                alt="Milagres Eucarísticos"
+                className="h-8 w-8 object-contain"
+              />
               <span className="font-serif text-xl text-[#D4AF37]">Milagres Eucarísticos</span>
             </div>
             <p className="text-[#A1A1AA] text-sm leading-relaxed">
