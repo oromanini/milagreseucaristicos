@@ -106,13 +106,11 @@ export const Home = () => {
 
         <button
           onClick={scrollToMiracles}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#A1A1AA] text-center animate-bounce"
+          className="absolute bottom-8 inset-x-0 flex flex-col items-center text-[#A1A1AA] text-center animate-bounce"
           data-testid="scroll-indicator"
         >
-          <div className="flex flex-col items-center">
-            <span className="text-xs uppercase tracking-widest mb-2">{t('scrollToDiscover')}</span>
-            <ChevronDown className="w-6 h-6" />
-          </div>
+          <span className="text-xs uppercase tracking-widest mb-2">{t('scrollToDiscover')}</span>
+          <ChevronDown className="w-6 h-6" />
         </button>
       </section>
 
