@@ -9,6 +9,7 @@ import { Home } from "./pages/Home";
 import { MiracleDetail } from "./pages/MiracleDetail";
 import { About } from "./pages/About";
 import { Login } from "./pages/Login";
+import { ViaSacra } from "./pages/ViaSacra";
 import { Dashboard } from "./pages/admin/Dashboard";
 import { MiracleForm } from "./pages/admin/MiracleForm";
 import { BulkImport } from "./pages/admin/BulkImport";
@@ -55,6 +56,7 @@ function AppContent() {
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/miracle/:id" element={<Layout><MiracleDetail /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
+        <Route path="/via-sacra" element={<Layout><ViaSacra /></Layout>} />
         <Route path="/disclaimer" element={<Layout><Disclaimer /></Layout>} />
         <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
         <Route path="/terms" element={<Layout><Terms /></Layout>} />
