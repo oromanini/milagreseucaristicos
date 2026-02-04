@@ -11,9 +11,9 @@
   --gold-dim: #A68A2D;
   --gold-light: #F9E79F;
   --blood-red: #720E1E;
-  --text-primary: #E5E5E5;
-  --text-secondary: #A1A1AA;
-  --text-muted: #52525B;
+  --text-primary: #F5ECD6;
+  --text-secondary: #CDBA8D;
+  --text-muted: #8B846F;
   --border-subtle: #27272A;
 }
 
@@ -49,9 +49,9 @@
 body {
   font-family: 'Manrope', sans-serif;
   background-color: var(--bg-default);
-  background-image: url('%PUBLIC_URL%/bg.png');
+  background-image: url('https://images.unsplash.com/photo-1611265200918-d84a293a3a12?auto=format&fit=crop&w=2000&q=80');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   background-repeat: no-repeat;
   background-attachment: fixed;
   min-height: 100vh;
@@ -154,6 +154,42 @@ h1, h2, h3, h4, h5, h6 {
     rgba(10, 10, 11, 0.6) 50%,
     rgba(10, 10, 11, 0.95) 100%
   );
+}
+
+.music-player {
+  background: rgba(10, 10, 11, 0.82);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+}
+
+.music-player-slider {
+  flex: 1;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.35);
+}
+
+.music-player-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--gold);
+  border: 2px solid rgba(10, 10, 11, 0.9);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+.music-player-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--gold);
+  border: 2px solid rgba(10, 10, 11, 0.9);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
 }
 
 .section-nav-item {
