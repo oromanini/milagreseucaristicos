@@ -42,27 +42,29 @@ export const MusicPlayer = ({ className = '' }) => {
           {trackName}
         </p>
         <audio ref={audioRef} src={trackSrc} onEnded={() => setIsPlaying(false)} preload="metadata" />
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={togglePlayback}
-          className="border-[#D4AF37]/40 text-[color:var(--gold)] hover:bg-[#D4AF37]/10"
-          aria-label={isPlaying ? 'Pausar' : 'Tocar'}
-        >
-          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-        </Button>
-        <div className="flex items-center gap-3 w-full sm:flex-1 sm:min-w-[160px]">
-          <span className="text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.2em]">Volume</span>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={volume}
-            onChange={(event) => setVolume(Number(event.target.value))}
-            className="music-player-slider"
-            aria-label="Volume"
-          />
+        <div className="flex items-center gap-3 w-full">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={togglePlayback}
+            className="border-[#D4AF37]/40 text-[color:var(--gold)] hover:bg-[#D4AF37]/10"
+            aria-label={isPlaying ? 'Pausar' : 'Tocar'}
+          >
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </Button>
+          <div className="music-player-volume">
+            <span className="text-[color:var(--text-secondary)] text-xs uppercase tracking-[0.2em]">Volume</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(event) => setVolume(Number(event.target.value))}
+              className="music-player-slider"
+              aria-label="Volume"
+            />
+          </div>
         </div>
       </div>
     </div>
