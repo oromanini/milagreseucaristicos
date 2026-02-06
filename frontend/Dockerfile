@@ -3,6 +3,9 @@ FROM node:20-alpine as build
 
 WORKDIR /app
 
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 # MUDANÇA CRÍTICA: Copiamos apenas o package.json inicialmente.
 # Isso evita o erro "file not found" se o yarn.lock não existir.
 COPY package.json ./
