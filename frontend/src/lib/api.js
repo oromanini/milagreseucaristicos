@@ -5,10 +5,25 @@ const normalizeBaseUrl = (value) => {
     return '';
   }
 
-  const trimmedValue = value.trim();
+  const trimmedValue = value.trim().replace(/^['"]|['"]$/g, '');
   const lowerCaseValue = trimmedValue.toLowerCase();
 
-  if (!trimmedValue || lowerCaseValue === 'undefined' || lowerCaseValue === 'null') {
+  if (
+    !trimmedValue ||
+    lowerCaseValue === 'undefined' ||
+    lowerCaseValue === 'null' ||
+    lowerCaseValue.startsWith('undefined/') ||
+    lowerCaseValue.startsWith('null/')
+  ) {
+    return '';
+  }
+
+  try {
+    const parsedUrl = new URL(trimmedValue);
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      return '';
+    }
+  } catch {
     return '';
   }
 
