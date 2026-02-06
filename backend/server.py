@@ -19,9 +19,14 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+db_name = os.environ.get("DB_NAME", "milagres_eucaristicos")
+if not mongo_url:
+    raise RuntimeError("MONGO_URL is not set and no default could be applied.")
+if not db_name:
+    raise RuntimeError("DB_NAME is not set and no default could be applied.")
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[db_name]
 
 # JWT Config
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default-secret-key')
