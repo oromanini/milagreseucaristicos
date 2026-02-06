@@ -34,11 +34,10 @@ jobs:
             JWT_SECRET=segredo-seguro-viasacra
           flags: '--allow-unauthenticated --max-instances=1 --memory=512Mi'
 
-      # DEPLOY FRONTEND
-      - name: Deploy Frontend
-        uses: 'google-github-actions/deploy-cloudrun@v2'
-        with:
-          service: 'milagres-frontend'
-          region: 'us-central1'
-          source: './frontend'
-          flags: '--allow-unauthenticated --max-instances=1 --memory=512Mi'
+      - name: Build and Push Container (Frontend)
+        run: |-
+          docker build \
+            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} \
+            -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-frontend:${{ github.sha }}" \
+            ./frontend
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-frontend:${{ github.sha }}"
