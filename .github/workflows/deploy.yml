@@ -25,6 +25,9 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
       # DEPLOY BACKEND (Configurado com Banco e CORS)
       - name: Deploy Backend
         uses: 'google-github-actions/deploy-cloudrun@v2'
