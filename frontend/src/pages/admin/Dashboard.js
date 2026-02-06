@@ -24,8 +24,9 @@ import {
 } from '../../components/ui/alert-dialog';
 import { Plus, Upload, Pencil, Trash2, Loader2, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../../lib/api';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = API_URL;
 
 export const Dashboard = () => {
   const { t } = useLanguage();

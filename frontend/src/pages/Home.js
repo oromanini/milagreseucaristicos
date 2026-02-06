@@ -15,8 +15,9 @@ import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Search, ChevronDown, Loader2 } from 'lucide-react';
 import { MusicPlayer } from '../components/MusicPlayer';
+import { API_URL } from '../lib/api';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = API_URL;
 
 const HERO_IMAGE = '/bg.png';
 
