@@ -2,6 +2,14 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Build da imagem Docker
+
+Ao gerar a imagem, passe a URL da API no `build-arg`:
+
+```bash
+docker build --build-arg REACT_APP_API_URL=https://sua-api.exemplo.com -t frontend-app .
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
