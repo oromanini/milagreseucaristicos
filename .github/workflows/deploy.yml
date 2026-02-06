@@ -4,9 +4,9 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_ID: solar-simulator-486100
+  PROJECT_ID: milagres-eucaristicos  # O ID correto
   GAR_LOCATION: us-central1
-  REPOSITORY: milagres-repo
+  REPOSITORY: milagres-repo          # O repositório que você acabou de criar
 
 concurrency:
   group: production-deploy
