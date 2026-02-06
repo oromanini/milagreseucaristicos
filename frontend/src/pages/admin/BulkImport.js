@@ -6,8 +6,9 @@ import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
 import { ArrowLeft, Upload, Loader2, Download, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../../lib/api';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = API_URL;
 
 export const BulkImport = () => {
   const { t } = useLanguage();

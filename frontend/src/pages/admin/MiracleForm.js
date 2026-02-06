@@ -16,8 +16,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { ArrowLeft, Loader2, Plus, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_BASE_URL, API_URL } from '../../lib/api';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = API_URL;
 
 const emptyMiracle = {
   name: '',
@@ -197,7 +198,7 @@ export const MiracleForm = () => {
       const response = await axios.post(`${API}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      updateMedia(mediaIndex, 'url', `${process.env.REACT_APP_BACKEND_URL}${response.data.url}`);
+      updateMedia(mediaIndex, 'url', `${API_BASE_URL}${response.data.url}`);
       toast.success('Upload concluído');
     } catch (error) {
       console.error('Upload error:', error);
