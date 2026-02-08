@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
+import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
 import {
   ArrowLeft,
   MapPin,
@@ -41,6 +42,7 @@ export const MiracleDetail = () => {
   const [miracle, setMiracle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     fetchMiracle();
@@ -160,20 +162,19 @@ export const MiracleDetail = () => {
                 <div className="mb-6" data-testid="header-image-gallery">
                   <div className="flex flex-wrap gap-3">
                     {imageMedia.map((item, index) => (
-                      <a
+                      <button
+                        type="button"
                         key={`${item.url}-${index}`}
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="group block"
                         title={item.title || getTranslated('name')}
+                        onClick={() => setSelectedImage(item)}
                       >
                         <img
                           src={item.url}
                           alt={item.title || getTranslated('name')}
                           className="w-20 h-20 sm:w-24 sm:h-24 object-cover border border-[#27272A] group-hover:border-[#D4AF37] transition-colors"
                         />
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -458,6 +459,21 @@ export const MiracleDetail = () => {
           </main>
         </div>
       </div>
+
+      <Dialog open={Boolean(selectedImage)} onOpenChange={(open) => !open && setSelectedImage(null)}>
+        <DialogContent className="max-w-[95vw] sm:max-w-4xl bg-[#121214] border-[#27272A] p-2 sm:p-4">
+          <DialogTitle className="sr-only">
+            {selectedImage?.title || getTranslated('name')}
+          </DialogTitle>
+          {selectedImage && (
+            <img
+              src={selectedImage.url}
+              alt={selectedImage.title || getTranslated('name')}
+              className="w-full max-h-[85vh] object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
