@@ -118,16 +118,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes slowZoom {
-  from {
+  0% {
     transform: scale(1);
   }
-  to {
-    transform: scale(1.1);
+  100% {
+    transform: scale(1.08);
   }
 }
 
 .animate-slow-zoom {
-  animation: slowZoom 20s ease-out forwards;
+  animation: slowZoom 14s ease-in-out infinite alternate;
 }
 
 .badge-recognized {

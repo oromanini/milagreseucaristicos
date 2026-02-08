@@ -21,8 +21,15 @@ const API = API_URL;
 
 const HERO_IMAGE = '/bg.png';
 
+const ROTATING_HERO_PHRASES_PT = [
+  'Descubra os milagres eucarísticos reconhecidos pela Igreja Católica, documentados pela ciência e preservados pela história.',
+  'Explore os milagres eucarísticos onde a fé encontra a evidência científica e a tradição se torna prova histórica.',
+  'Testemunhe os fenômenos eucarísticos que desafiam a lógica, validados por análises clínicas e ratificados pela Santa Sé.',
+  'Mergulhe na história dos prodígios eucarísticos: mistérios sagrados que resistiram ao tempo e ao escrutínio da ciência.'
+];
+
 export const Home = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [miracles, setMiracles] = useState([]);
   const [filters, setFilters] = useState({ countries: [], centuries: [] });
   const [loading, setLoading] = useState(true);
@@ -32,6 +39,11 @@ export const Home = () => {
   const [country, setCountry] = useState('');
   const [century, setCentury] = useState('');
   const [showInvestigating, setShowInvestigating] = useState(false);
+  const [heroPhraseIndex, setHeroPhraseIndex] = useState(0);
+
+  const heroDescription = language === 'pt'
+    ? ROTATING_HERO_PHRASES_PT[heroPhraseIndex]
+    : t('heroDescription');
 
   const fetchMiracles = useCallback(async () => {
     setLoading(true);
@@ -71,6 +83,19 @@ export const Home = () => {
     fetchMiracles();
   }, [fetchMiracles]);
 
+  useEffect(() => {
+    if (language !== 'pt') {
+      setHeroPhraseIndex(0);
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setHeroPhraseIndex((prev) => (prev + 1) % ROTATING_HERO_PHRASES_PT.length);
+    }, 3500);
+
+    return () => window.clearInterval(interval);
+  }, [language]);
+
   const scrollToMiracles = () => {
     document.getElementById('miracles-section')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -94,8 +119,8 @@ export const Home = () => {
           <p className="text-[color:var(--gold)] text-lg sm:text-xl font-serif mb-6">
             {t('heroSubtitle')}
           </p>
-          <p className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8">
-            {t('heroDescription')}
+          <p key={heroPhraseIndex} className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8 animate-fade-in-up">
+            {heroDescription}
           </p>
           <Button
             onClick={scrollToMiracles}
