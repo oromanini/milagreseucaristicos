@@ -33,6 +33,7 @@ const emptyMiracle = {
   timeline: [],
   scientific_reports: [],
   church_verdict: '',
+  cover_image_url: '',
   media: [],
   references: [],
   translations: {
@@ -99,6 +100,13 @@ export const MiracleForm = () => {
 
   const updateField = (field, value) => {
     setMiracle(prev => ({ ...prev, [field]: value }));
+  };
+
+  const getFileAcceptByMediaType = (type) => {
+    if (type === 'image') return 'image/*';
+    if (type === 'pdf') return '.pdf,application/pdf';
+    if (type === 'youtube') return '';
+    return 'video/*';
   };
 
   const updateTranslation = (lang, field, value) => {
@@ -187,7 +195,7 @@ export const MiracleForm = () => {
   };
 
   // File upload
-  const handleFileUpload = async (e, mediaIndex) => {
+  const handleFileUpload = async (e, mediaIndex, targetField = 'url') => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -198,7 +206,12 @@ export const MiracleForm = () => {
       const response = await axios.post(`${API}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      updateMedia(mediaIndex, 'url', `${API_BASE_URL}${response.data.url}`);
+      const uploadedUrl = `${API_BASE_URL}${response.data.url}`;
+      if (targetField === 'cover_image_url') {
+        updateField('cover_image_url', uploadedUrl);
+      } else {
+        updateMedia(mediaIndex, targetField, uploadedUrl);
+      }
       toast.success('Upload concluído');
     } catch (error) {
       console.error('Upload error:', error);
@@ -254,6 +267,29 @@ export const MiracleForm = () => {
 
           {/* Basic Info */}
           <TabsContent value="basic" className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-[#A1A1AA]">Foto de capa (card redondo)</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={miracle.cover_image_url || ''}
+                  onChange={(e) => updateField('cover_image_url', e.target.value)}
+                  placeholder="https://..."
+                  className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5] flex-1"
+                />
+                <label className="cursor-pointer">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, null, 'cover_image_url')}
+                    className="hidden"
+                  />
+                  <Button type="button" variant="outline" className="border-[#27272A]" asChild>
+                    <span><Upload className="w-4 h-4" /></span>
+                  </Button>
+                </label>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="text-[#A1A1AA]">Nome do Milagre *</Label>
@@ -458,7 +494,8 @@ export const MiracleForm = () => {
                       <SelectContent className="bg-[#121214] border-[#27272A]">
                         <SelectItem value="image" className="text-[#E5E5E5]">Imagem</SelectItem>
                         <SelectItem value="video" className="text-[#E5E5E5]">Vídeo</SelectItem>
-                        <SelectItem value="document" className="text-[#E5E5E5]">Documento</SelectItem>
+                        <SelectItem value="youtube" className="text-[#E5E5E5]">YouTube</SelectItem>
+                        <SelectItem value="pdf" className="text-[#E5E5E5]">PDF</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -484,17 +521,19 @@ export const MiracleForm = () => {
                       onChange={(e) => updateMedia(index, 'url', e.target.value)}
                       className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5] flex-1"
                     />
-                    <label className="cursor-pointer">
-                      <Input
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={(e) => handleFileUpload(e, index)}
-                        className="hidden"
-                      />
-                      <Button type="button" variant="outline" className="border-[#27272A]" asChild>
-                        <span><Upload className="w-4 h-4" /></span>
-                      </Button>
-                    </label>
+                    {item.type !== 'youtube' && (
+                      <label className="cursor-pointer">
+                        <Input
+                          type="file"
+                          accept={getFileAcceptByMediaType(item.type)}
+                          onChange={(e) => handleFileUpload(e, index, 'url')}
+                          className="hidden"
+                        />
+                        <Button type="button" variant="outline" className="border-[#27272A]" asChild>
+                          <span><Upload className="w-4 h-4" /></span>
+                        </Button>
+                      </label>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

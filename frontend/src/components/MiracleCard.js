@@ -4,7 +4,7 @@ import { MapPin, Calendar } from 'lucide-react';
 
 export const MiracleCard = ({ miracle }) => {
   const { language, t } = useLanguage();
-  const mainImage = miracle.media?.find((item) => item.type === 'image' && item.url)?.url;
+  const mainImage = miracle.cover_image_url || miracle.media?.find((item) => item.type === 'image' && item.url)?.url;
   
   // Get translated content if available
   const getTranslated = (field) => {

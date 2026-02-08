@@ -81,7 +81,7 @@ class ScientificReport(BaseModel):
     original_excerpts: List[str] = []
 
 class MediaItem(BaseModel):
-    type: str  # image, video, document
+    type: str  # image, video, youtube, pdf
     url: str
     title: str
     description: Optional[str] = None
@@ -116,6 +116,7 @@ class MiracleBase(BaseModel):
     timeline: List[TimelineEvent] = []
     scientific_reports: List[ScientificReport] = []
     church_verdict: str
+    cover_image_url: Optional[str] = None
     media: List[MediaItem] = []
     references: List[Reference] = []
     translations: Dict[str, MiracleTranslation] = {}  # en, es
@@ -136,6 +137,7 @@ class MiracleUpdate(BaseModel):
     timeline: Optional[List[TimelineEvent]] = None
     scientific_reports: Optional[List[ScientificReport]] = None
     church_verdict: Optional[str] = None
+    cover_image_url: Optional[str] = None
     media: Optional[List[MediaItem]] = None
     references: Optional[List[Reference]] = None
     translations: Optional[Dict[str, MiracleTranslation]] = None

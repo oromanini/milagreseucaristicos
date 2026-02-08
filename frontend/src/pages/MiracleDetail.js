@@ -65,6 +65,13 @@ export const MiracleDetail = () => {
   };
 
 
+  const getYoutubeEmbedUrl = (url) => {
+    if (!url) return null;
+    const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
+    return match?.[1] ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
+
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId);
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -73,7 +80,10 @@ export const MiracleDetail = () => {
   const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
   const prevSection = sections[currentSectionIndex - 1];
   const nextSection = sections[currentSectionIndex + 1];
-  const imageMedia = miracle?.media?.filter(item => item.type === 'image') || [];
+  const imageMedia = [
+    ...(miracle?.cover_image_url ? [{ type: 'image', url: miracle.cover_image_url, title: 'Capa do milagre' }] : []),
+    ...(miracle?.media?.filter(item => item.type === 'image') || []),
+  ];
   const nonImageMedia = miracle?.media?.filter(item => item.type !== 'image') || [];
 
   if (loading) {
@@ -318,21 +328,45 @@ export const MiracleDetail = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {nonImageMedia.map((item, index) => (
                     <div key={index} className="bg-[#121214] border border-[#27272A] p-4">
-                      {item.type === 'video' ? (
+                      {item.type === 'youtube' && getYoutubeEmbedUrl(item.url) ? (
+                        <iframe
+                          src={getYoutubeEmbedUrl(item.url)}
+                          title={item.title || getTranslated('name')}
+                          className="w-full h-48 mb-3"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          allowFullScreen
+                        />
+                      ) : item.type === 'video' ? (
+                        <video controls className="w-full h-48 object-cover mb-3 bg-[#0A0A0B]">
+                          <source src={item.url} />
+                          Seu navegador não suporta vídeo.
+                        </video>
+                      ) : item.type === 'pdf' ? (
+                        <iframe
+                          src={item.url}
+                          title={item.title || 'PDF'}
+                          className="w-full h-48 mb-3 bg-white"
+                        />
+                      ) : (
                         <div className="w-full h-48 bg-[#0A0A0B] flex items-center justify-center mb-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[#D4AF37]">
                             <ExternalLink className="w-8 h-8" />
                           </a>
-                        </div>
-                      ) : (
-                        <div className="w-full h-48 bg-[#0A0A0B] flex items-center justify-center mb-3">
-                          <FileText className="w-8 h-8 text-[#D4AF37]" />
                         </div>
                       )}
                       <h4 className="text-[#E5E5E5] font-medium">{item.title}</h4>
                       {item.description && (
                         <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
                       )}
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-2 hover:underline"
+                      >
+                        Abrir mídia <ExternalLink className="w-3 h-3" />
+                      </a>
                       {item.category && (
                         <span className="text-[#52525B] text-xs uppercase tracking-wider mt-2 inline-block">
                           {item.category}
