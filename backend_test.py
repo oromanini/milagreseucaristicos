@@ -1,7 +1,33 @@
-import requests
 import sys
 import json
 from datetime import datetime
+import urllib.request
+import urllib.error
+
+
+class _SimpleResponse:
+    def __init__(self, status_code, body):
+        self.status_code = status_code
+        self._body = body
+        self.text = body.decode("utf-8", errors="replace") if isinstance(body, (bytes, bytearray)) else str(body)
+
+    def json(self):
+        return json.loads(self.text)
+
+
+def _request(method, url, headers=None, json_data=None, timeout=10):
+    payload = None
+    if json_data is not None:
+        payload = json.dumps(json_data).encode("utf-8")
+
+    req = urllib.request.Request(url, data=payload, headers=headers or {}, method=method)
+
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return _SimpleResponse(resp.getcode(), resp.read())
+    except urllib.error.HTTPError as e:
+        return _SimpleResponse(e.code, e.read())
+
 
 class EucharisticMiraclesAPITester:
     def __init__(self, base_url="http://localhost:8000/api"):
@@ -39,13 +65,13 @@ class EucharisticMiraclesAPITester:
 
         try:
             if method == 'GET':
-                response = requests.get(url, headers=test_headers, timeout=10)
+                response = _request('GET', url, headers=test_headers, timeout=10)
             elif method == 'POST':
-                response = requests.post(url, json=data, headers=test_headers, timeout=10)
+                response = _request('POST', url, headers=test_headers, json_data=data, timeout=10)
             elif method == 'PUT':
-                response = requests.put(url, json=data, headers=test_headers, timeout=10)
+                response = _request('PUT', url, headers=test_headers, json_data=data, timeout=10)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=test_headers, timeout=10)
+                response = _request('DELETE', url, headers=test_headers, timeout=10)
 
             success = response.status_code == expected_status
             details = f"Status: {response.status_code}"
