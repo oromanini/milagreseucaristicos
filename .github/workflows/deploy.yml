@@ -70,3 +70,11 @@ jobs:
             -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-frontend:${{ github.sha }}" \
             ./frontend
           docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-frontend:${{ github.sha }}"
+
+      - name: Deploy Frontend
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: 'milagres-frontend'
+          region: 'us-central1'
+          image: '${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-frontend:${{ github.sha }}'
+          flags: '--allow-unauthenticated --memory=512Mi'
