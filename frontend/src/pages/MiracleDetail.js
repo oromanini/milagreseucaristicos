@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
+import { Button } from '../components/ui/button';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../components/ui/carousel';
 import {
   ArrowLeft,
   MapPin,
@@ -84,7 +86,8 @@ export const MiracleDetail = () => {
     ...(miracle?.cover_image_url ? [{ type: 'image', url: miracle.cover_image_url, title: 'Capa do milagre' }] : []),
     ...(miracle?.media?.filter(item => item.type === 'image') || []),
   ];
-  const nonImageMedia = miracle?.media?.filter(item => item.type !== 'image') || [];
+  const videos = miracle?.media?.filter(item => item.type === 'video' || item.type === 'youtube') || [];
+  const pdfs = miracle?.media?.filter(item => item.type === 'pdf') || [];
 
   if (loading) {
     return (
@@ -158,19 +161,31 @@ export const MiracleDetail = () => {
               </h1>
 
               {imageMedia.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" data-testid="header-image-gallery">
-                  {imageMedia.map((item, index) => (
-                    <figure key={index} className="bg-[#121214] border border-[#27272A] p-2">
-                      <img
-                        src={item.url}
-                        alt={item.title || getTranslated('name')}
-                        className="w-full h-56 sm:h-64 object-cover"
-                      />
-                      {item.title && (
-                        <figcaption className="text-[#A1A1AA] text-sm mt-2 px-1">{item.title}</figcaption>
-                      )}
-                    </figure>
-                  ))}
+                <div className="mb-6" data-testid="header-image-gallery">
+                  <Carousel opts={{ align: 'start', loop: imageMedia.length > 1 }} className="w-full">
+                    <CarouselContent>
+                      {imageMedia.map((item, index) => (
+                        <CarouselItem key={`${item.url}-${index}`}>
+                          <figure className="bg-[#121214] border border-[#27272A] p-2">
+                            <img
+                              src={item.url}
+                              alt={item.title || getTranslated('name')}
+                              className="w-full h-56 sm:h-72 object-cover"
+                            />
+                            {item.title && (
+                              <figcaption className="text-[#A1A1AA] text-sm mt-2 px-1">{item.title}</figcaption>
+                            )}
+                          </figure>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {imageMedia.length > 1 && (
+                      <>
+                        <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2 border-[#D4AF37] text-[#D4AF37] bg-[#0A0A0B]/90 hover:bg-[#121214]" />
+                        <CarouselNext className="right-2 top-1/2 -translate-y-1/2 border-[#D4AF37] text-[#D4AF37] bg-[#0A0A0B]/90 hover:bg-[#121214]" />
+                      </>
+                    )}
+                  </Carousel>
                 </div>
               )}
 
@@ -324,56 +339,70 @@ export const MiracleDetail = () => {
                 <h2 className="font-serif text-2xl text-[#E5E5E5]">{t('media')}</h2>
               </div>
               
-              {nonImageMedia.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {nonImageMedia.map((item, index) => (
-                    <div key={index} className="bg-[#121214] border border-[#27272A] p-4">
-                      {item.type === 'youtube' && getYoutubeEmbedUrl(item.url) ? (
-                        <iframe
-                          src={getYoutubeEmbedUrl(item.url)}
-                          title={item.title || getTranslated('name')}
-                          className="w-full h-48 mb-3"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          allowFullScreen
-                        />
-                      ) : item.type === 'video' ? (
-                        <video controls className="w-full h-48 object-cover mb-3 bg-[#0A0A0B]">
-                          <source src={item.url} />
-                          Seu navegador não suporta vídeo.
-                        </video>
-                      ) : item.type === 'pdf' ? (
-                        <iframe
-                          src={item.url}
-                          title={item.title || 'PDF'}
-                          className="w-full h-48 mb-3 bg-white"
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-[#0A0A0B] flex items-center justify-center mb-3">
-                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[#D4AF37]">
-                            <ExternalLink className="w-8 h-8" />
-                          </a>
-                        </div>
-                      )}
-                      <h4 className="text-[#E5E5E5] font-medium">{item.title}</h4>
-                      {item.description && (
-                        <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
-                      )}
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-2 hover:underline"
-                      >
-                        Abrir mídia <ExternalLink className="w-3 h-3" />
-                      </a>
-                      {item.category && (
-                        <span className="text-[#52525B] text-xs uppercase tracking-wider mt-2 inline-block">
-                          {item.category}
-                        </span>
-                      )}
+              {(videos.length > 0 || pdfs.length > 0) ? (
+                <div className="space-y-8">
+                  {videos.length > 0 && (
+                    <div>
+                      <h3 className="text-[#E5E5E5] font-serif text-xl mb-4">Vídeos</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {videos.map((item, index) => (
+                          <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
+                            {item.type === 'youtube' && getYoutubeEmbedUrl(item.url) ? (
+                              <iframe
+                                src={getYoutubeEmbedUrl(item.url)}
+                                title={item.title || getTranslated('name')}
+                                className="w-full h-48 mb-3"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerPolicy="strict-origin-when-cross-origin"
+                                allowFullScreen
+                              />
+                            ) : (
+                              <video controls className="w-full h-48 object-cover mb-3 bg-[#0A0A0B]">
+                                <source src={item.url} />
+                                Seu navegador não suporta vídeo.
+                              </video>
+                            )}
+                            <h4 className="text-[#E5E5E5] font-medium">{item.title}</h4>
+                            {item.description && (
+                              <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
+                            )}
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-2 hover:underline"
+                            >
+                              Abrir mídia <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
+                  )}
+
+                  {pdfs.length > 0 && (
+                    <div>
+                      <h3 className="text-[#E5E5E5] font-serif text-xl mb-4">Documentos (PDF)</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {pdfs.map((item, index) => (
+                          <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
+                            <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
+                            {item.description && (
+                              <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
+                            )}
+                            <Button
+                              asChild
+                              className="mt-4 bg-[#D4AF37] hover:bg-[#A68A2D] text-[#0A0A0B]"
+                            >
+                              <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                Abrir PDF em nova aba <ExternalLink className="w-4 h-4 ml-2" />
+                              </a>
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-[#52525B] italic">{t('noResults')}</p>

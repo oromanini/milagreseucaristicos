@@ -40,9 +40,11 @@ export const Home = () => {
   const [century, setCentury] = useState('');
   const [showInvestigating, setShowInvestigating] = useState(false);
   const [heroPhraseIndex, setHeroPhraseIndex] = useState(0);
+  const [typedHeroDescription, setTypedHeroDescription] = useState('');
+  const [isDeletingHeroText, setIsDeletingHeroText] = useState(false);
 
   const heroDescription = language === 'pt'
-    ? ROTATING_HERO_PHRASES_PT[heroPhraseIndex]
+    ? typedHeroDescription
     : t('heroDescription');
 
   const fetchMiracles = useCallback(async () => {
@@ -86,15 +88,46 @@ export const Home = () => {
   useEffect(() => {
     if (language !== 'pt') {
       setHeroPhraseIndex(0);
+      setTypedHeroDescription('');
+      setIsDeletingHeroText(false);
       return;
     }
 
-    const interval = window.setInterval(() => {
-      setHeroPhraseIndex((prev) => (prev + 1) % ROTATING_HERO_PHRASES_PT.length);
-    }, 3500);
+    const currentPhrase = ROTATING_HERO_PHRASES_PT[heroPhraseIndex];
+    let timeoutDelay = isDeletingHeroText ? 20 : 35;
 
-    return () => window.clearInterval(interval);
-  }, [language]);
+    if (!isDeletingHeroText && typedHeroDescription.length < currentPhrase.length) {
+      timeoutDelay = 35;
+    } else if (!isDeletingHeroText && typedHeroDescription.length === currentPhrase.length) {
+      timeoutDelay = 1400;
+    } else if (isDeletingHeroText && typedHeroDescription.length > 0) {
+      timeoutDelay = 20;
+    } else {
+      timeoutDelay = 250;
+    }
+
+    const timeout = window.setTimeout(() => {
+      if (!isDeletingHeroText && typedHeroDescription.length < currentPhrase.length) {
+        setTypedHeroDescription(currentPhrase.slice(0, typedHeroDescription.length + 1));
+        return;
+      }
+
+      if (!isDeletingHeroText && typedHeroDescription.length === currentPhrase.length) {
+        setIsDeletingHeroText(true);
+        return;
+      }
+
+      if (isDeletingHeroText && typedHeroDescription.length > 0) {
+        setTypedHeroDescription(currentPhrase.slice(0, typedHeroDescription.length - 1));
+        return;
+      }
+
+      setIsDeletingHeroText(false);
+      setHeroPhraseIndex((prev) => (prev + 1) % ROTATING_HERO_PHRASES_PT.length);
+    }, timeoutDelay);
+
+    return () => window.clearTimeout(timeout);
+  }, [language, heroPhraseIndex, typedHeroDescription, isDeletingHeroText]);
 
   const scrollToMiracles = () => {
     document.getElementById('miracles-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -119,8 +152,11 @@ export const Home = () => {
           <p className="text-[color:var(--gold)] text-lg sm:text-xl font-serif mb-6">
             {t('heroSubtitle')}
           </p>
-          <p key={heroPhraseIndex} className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8 animate-fade-in-up">
+          <p className="text-white text-base sm:text-lg max-w-2xl mx-auto mb-8 min-h-[56px] sm:min-h-[72px]">
             {heroDescription}
+            {language === 'pt' && (
+              <span className="inline-block w-[2px] h-[1em] bg-[#D4AF37] ml-1 align-[-2px] animate-pulse" aria-hidden="true" />
+            )}
           </p>
           <Button
             onClick={scrollToMiracles}
