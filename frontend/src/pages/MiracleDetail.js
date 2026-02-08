@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
-import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
 import {
   ArrowLeft,
@@ -381,14 +380,21 @@ export const MiracleDetail = () => {
                             {item.description && (
                               <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
                             )}
-                            <Button
-                              asChild
-                              className="mt-4 bg-[#D4AF37] hover:bg-[#A68A2D] text-[#0A0A0B]"
+                            <div className="mt-4 rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
+                              <iframe
+                                src={`${item.url}#toolbar=0&navpanes=0&scrollbar=1`}
+                                title={item.title || `Documento PDF ${index + 1}`}
+                                className="w-full h-56"
+                              />
+                            </div>
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
                             >
-                              <a href={item.url} target="_blank" rel="noopener noreferrer">
-                                Abrir PDF em nova aba <ExternalLink className="w-4 h-4 ml-2" />
-                              </a>
-                            </Button>
+                              Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
+                            </a>
                           </div>
                         ))}
                       </div>
