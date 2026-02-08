@@ -297,6 +297,18 @@ async def delete_miracle(miracle_id: str, user: dict = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="Miracle not found")
     return {"message": "Miracle deleted"}
 
+
+@api_router.delete("/miracles/by-century/{century}")
+async def delete_miracles_by_century(century: str, user: dict = Depends(get_current_user)):
+    result = await db.miracles.delete_many({"century": century})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="No miracles found for this century")
+    return {
+        "message": "Miracles deleted",
+        "century": century,
+        "deleted_count": result.deleted_count
+    }
+
 # ==================== BULK IMPORT ====================
 
 @api_router.post("/miracles/bulk-import")
