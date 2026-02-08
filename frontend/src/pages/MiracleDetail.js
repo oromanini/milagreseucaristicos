@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../components/ui/carousel';
 import {
   ArrowLeft,
   MapPin,
@@ -82,10 +81,7 @@ export const MiracleDetail = () => {
   const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
   const prevSection = sections[currentSectionIndex - 1];
   const nextSection = sections[currentSectionIndex + 1];
-  const imageMedia = [
-    ...(miracle?.cover_image_url ? [{ type: 'image', url: miracle.cover_image_url, title: 'Capa do milagre' }] : []),
-    ...(miracle?.media?.filter(item => item.type === 'image') || []),
-  ];
+  const imageMedia = miracle?.media?.filter(item => item.type === 'image') || [];
   const videos = miracle?.media?.filter(item => item.type === 'video' || item.type === 'youtube') || [];
   const pdfs = miracle?.media?.filter(item => item.type === 'pdf') || [];
 
@@ -162,30 +158,24 @@ export const MiracleDetail = () => {
 
               {imageMedia.length > 0 && (
                 <div className="mb-6" data-testid="header-image-gallery">
-                  <Carousel opts={{ align: 'start', loop: imageMedia.length > 1 }} className="w-full">
-                    <CarouselContent>
-                      {imageMedia.map((item, index) => (
-                        <CarouselItem key={`${item.url}-${index}`}>
-                          <figure className="bg-[#121214] border border-[#27272A] p-2">
-                            <img
-                              src={item.url}
-                              alt={item.title || getTranslated('name')}
-                              className="w-full h-56 sm:h-72 object-cover"
-                            />
-                            {item.title && (
-                              <figcaption className="text-[#A1A1AA] text-sm mt-2 px-1">{item.title}</figcaption>
-                            )}
-                          </figure>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    {imageMedia.length > 1 && (
-                      <>
-                        <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2 border-[#D4AF37] text-[#D4AF37] bg-[#0A0A0B]/90 hover:bg-[#121214]" />
-                        <CarouselNext className="right-2 top-1/2 -translate-y-1/2 border-[#D4AF37] text-[#D4AF37] bg-[#0A0A0B]/90 hover:bg-[#121214]" />
-                      </>
-                    )}
-                  </Carousel>
+                  <div className="flex flex-wrap gap-3">
+                    {imageMedia.map((item, index) => (
+                      <a
+                        key={`${item.url}-${index}`}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block"
+                        title={item.title || getTranslated('name')}
+                      >
+                        <img
+                          src={item.url}
+                          alt={item.title || getTranslated('name')}
+                          className="w-20 h-20 sm:w-24 sm:h-24 object-cover border border-[#27272A] group-hover:border-[#D4AF37] transition-colors"
+                        />
+                      </a>
+                    ))}
+                  </div>
                 </div>
               )}
 

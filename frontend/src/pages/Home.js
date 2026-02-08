@@ -160,7 +160,7 @@ export const Home = () => {
           </p>
           <Button
             onClick={scrollToMiracles}
-            className="bg-[#D4AF37] hover:bg-[#A68A2D] text-[#0A0A0B] uppercase tracking-widest px-8 py-6"
+            className="bg-[#D4AF37] hover:bg-[#A68A2D] text-[#0A0A0B] uppercase tracking-widest px-8 py-6 elegant-glow-button transition-shadow duration-500"
             data-testid="explore-btn"
           >
             {t('explore')}

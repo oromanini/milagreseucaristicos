@@ -130,6 +130,33 @@ h1, h2, h3, h4, h5, h6 {
   animation: slowZoom 14s ease-in-out infinite alternate;
 }
 
+
+@keyframes elegantGoldGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.24), 0 0 20px rgba(212, 175, 55, 0.12);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.42), 0 0 34px rgba(212, 175, 55, 0.2);
+    transform: translateY(-1px);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.24), 0 0 20px rgba(212, 175, 55, 0.12);
+    transform: translateY(0);
+  }
+}
+
+.elegant-glow-button {
+  animation: elegantGoldGlow 2.8s ease-in-out infinite;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .elegant-glow-button {
+    animation: none;
+  }
+}
+
 .badge-recognized {
   background: rgba(212, 175, 55, 0.2);
   color: var(--gold);
