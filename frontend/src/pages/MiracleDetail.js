@@ -73,6 +73,8 @@ export const MiracleDetail = () => {
   const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
   const prevSection = sections[currentSectionIndex - 1];
   const nextSection = sections[currentSectionIndex + 1];
+  const imageMedia = miracle?.media?.filter(item => item.type === 'image') || [];
+  const nonImageMedia = miracle?.media?.filter(item => item.type !== 'image') || [];
 
   if (loading) {
     return (
@@ -144,6 +146,24 @@ export const MiracleDetail = () => {
               <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#E5E5E5] mb-4">
                 {getTranslated('name')}
               </h1>
+
+              {imageMedia.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6" data-testid="header-image-gallery">
+                  {imageMedia.map((item, index) => (
+                    <figure key={index} className="bg-[#121214] border border-[#27272A] p-2">
+                      <img
+                        src={item.url}
+                        alt={item.title || getTranslated('name')}
+                        className="w-full h-56 sm:h-64 object-cover"
+                      />
+                      {item.title && (
+                        <figcaption className="text-[#A1A1AA] text-sm mt-2 px-1">{item.title}</figcaption>
+                      )}
+                    </figure>
+                  ))}
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-6 text-[#A1A1AA]">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#D4AF37]" />
@@ -294,17 +314,11 @@ export const MiracleDetail = () => {
                 <h2 className="font-serif text-2xl text-[#E5E5E5]">{t('media')}</h2>
               </div>
               
-              {miracle.media?.length > 0 ? (
+              {nonImageMedia.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {miracle.media.map((item, index) => (
+                  {nonImageMedia.map((item, index) => (
                     <div key={index} className="bg-[#121214] border border-[#27272A] p-4">
-                      {item.type === 'image' ? (
-                        <img
-                          src={item.url}
-                          alt={item.title}
-                          className="w-full h-48 object-cover mb-3"
-                        />
-                      ) : item.type === 'video' ? (
+                      {item.type === 'video' ? (
                         <div className="w-full h-48 bg-[#0A0A0B] flex items-center justify-center mb-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[#D4AF37]">
                             <ExternalLink className="w-8 h-8" />
