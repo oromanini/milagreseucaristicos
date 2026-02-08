@@ -350,7 +350,7 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(get_cur
     extension = Path(file.filename).suffix
     content_type = file.content_type or mimetypes.guess_type(file.filename)[0] or "application/octet-stream"
 
-    upload_stream = await uploads_bucket.open_upload_stream(
+    upload_stream = uploads_bucket.open_upload_stream(
         file.filename,
         metadata={
             "content_type": content_type,
