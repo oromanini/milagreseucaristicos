@@ -1,28 +1,31 @@
-# Estágio 1: Build do React
+# Estágio 1: Build
 FROM node:20-alpine as build
 
 WORKDIR /app
 
-# Copia os arquivos de dependências
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Copia APENAS o package.json primeiro (para não quebrar se faltar o lock)
+COPY package.json ./
 
-# --- O SEGREDINHO ESTÁ AQUI ---
-# Recebe a variável do GitHub Actions
+# Tenta instalar. Se tiver yarn.lock local, ótimo. Se não, ele cria.
+RUN yarn install
+
+# --- A VARIÁVEL MÁGICA ---
 ARG REACT_APP_API_URL
-# Passa a variável para o ambiente do Build
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
-# ------------------------------
+# -------------------------
 
-# Copia o resto do código
+# Copia o resto dos arquivos
 COPY . .
 
-# Faz o build (agora com a variável certa!)
+# Faz o build
 RUN yarn build
 
-# Estágio 2: Servidor Nginx (Produção)
+# Estágio 2: Servidor (Produção)
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
+
+# Copia a configuração do Nginx que criamos no Passo 1
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
