@@ -461,7 +461,7 @@ export const MiracleDetail = () => {
       </div>
 
       <Dialog open={Boolean(selectedImage)} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-[95vw] sm:max-w-4xl bg-[#121214] border-[#27272A] p-2 sm:p-4">
+        <DialogContent className="!w-auto max-w-[95vw] bg-[#121214] border-[#27272A] p-2 sm:p-4">
           <DialogTitle className="sr-only">
             {selectedImage?.title || getTranslated('name')}
           </DialogTitle>
@@ -469,7 +469,7 @@ export const MiracleDetail = () => {
             <img
               src={selectedImage.url}
               alt={selectedImage.title || getTranslated('name')}
-              className="w-full max-h-[85vh] object-contain"
+              className="w-auto h-auto max-w-full max-h-[85vh] object-contain mx-auto"
             />
           )}
         </DialogContent>
