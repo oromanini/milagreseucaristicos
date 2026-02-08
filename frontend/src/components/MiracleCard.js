@@ -4,6 +4,7 @@ import { MapPin, Calendar } from 'lucide-react';
 
 export const MiracleCard = ({ miracle }) => {
   const { language, t } = useLanguage();
+  const mainImage = miracle.media?.find((item) => item.type === 'image' && item.url)?.url;
   
   // Get translated content if available
   const getTranslated = (field) => {
@@ -14,15 +15,25 @@ export const MiracleCard = ({ miracle }) => {
   };
 
   const name = getTranslated('name');
-  const statusLabel = miracle.status === 'recognized' ? t('statusRecognized') : t('statusInvestigating');
 
   return (
     <Link
       to={`/miracle/${miracle.id}`}
-      className="block card-hover group"
+      className="block card-hover group h-full"
       data-testid={`miracle-card-${miracle.id}`}
     >
-      <div className="bg-[#121214] border border-[rgba(212,175,55,0.2)] p-6 h-full flex flex-col">
+      <div className="bg-[#121214] border border-[rgba(212,175,55,0.2)] p-6 h-[430px] flex flex-col rounded-2xl">
+        {mainImage && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={mainImage}
+              alt={name}
+              className="w-16 h-16 rounded-full object-cover border-2 border-[rgba(212,175,55,0.35)] shadow-[0_0_0_4px_rgba(255,255,255,0.04)]"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <span className="text-3xl">{miracle.country_flag}</span>
@@ -36,7 +47,7 @@ export const MiracleCard = ({ miracle }) => {
         </div>
 
         {/* Title */}
-        <h3 className="font-serif text-xl text-[#E5E5E5] group-hover:text-[#D4AF37] transition-colors duration-300 mb-3">
+        <h3 className="font-serif text-xl text-[#E5E5E5] group-hover:text-[#D4AF37] transition-colors duration-300 mb-3 line-clamp-2 min-h-[56px]">
           {name}
         </h3>
 
@@ -53,8 +64,8 @@ export const MiracleCard = ({ miracle }) => {
         </div>
 
         {/* Description preview */}
-        <p className="text-[#A1A1AA] text-sm leading-relaxed line-clamp-3 flex-grow">
-          {getTranslated('phenomenon_description')?.substring(0, 150)}...
+        <p className="text-[#A1A1AA] text-sm leading-relaxed line-clamp-4 flex-grow">
+          {getTranslated('phenomenon_description')}
         </p>
 
         {/* Footer */}
