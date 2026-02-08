@@ -1,32 +1,19 @@
 import axios from 'axios';
 
-const DEFAULT_API_BASE_URL = 'https://milagres-backend-851808661322.us-central1.run.app';
+// --- SOLUÇÃO NUCLEAR: URL DIRETA ---
+// Removemos process.env, window.ENV e sanitização.
+// O endereço é fixo. Não tem como dar undefined.
 
-const sanitizeApiBaseUrl = (rawValue) => {
-  const value = rawValue?.trim();
+const BACKEND_URL = 'https://milagres-backend-851808661322.us-central1.run.app';
 
-  if (!value) {
-    return DEFAULT_API_BASE_URL;
-  }
+export const API_BASE_URL = BACKEND_URL;
 
-  const normalizedValue = value.toLowerCase();
-  if (normalizedValue === 'undefined' || normalizedValue === 'null') {
-    return DEFAULT_API_BASE_URL;
-  }
-
-  return value.replace(/\/+$/, '');
-};
-
-// Tenta ler do window.ENV (arquivo público), se não tiver usa process.env
-const runtimeApiUrl = (window.ENV && window.ENV.API_URL) || process.env.REACT_APP_API_URL;
-const normalizedBaseUrl = sanitizeApiBaseUrl(runtimeApiUrl);
-
-export const API_BASE_URL = normalizedBaseUrl;
-
-export const API_URL = API_BASE_URL.endsWith('/api')
-  ? API_BASE_URL
-  : `${API_BASE_URL}/api`;
+// Garante que a URL final tenha o /api
+export const API_URL = `${API_BASE_URL}/api`;
 
 export const api = axios.create({
   baseURL: API_URL,
 });
+
+// Logs para você ver no Console do navegador se funcionou
+console.log('🔌 Conectando na API:', API_URL);
