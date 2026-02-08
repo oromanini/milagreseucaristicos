@@ -1,33 +1,28 @@
-# Estágio 1: Build (Robustez Máxima)
+# Estágio 1: Build do React
 FROM node:20-alpine as build
 
 WORKDIR /app
 
+# Copia os arquivos de dependências
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+# --- O SEGREDINHO ESTÁ AQUI ---
+# Recebe a variável do GitHub Actions
 ARG REACT_APP_API_URL
+# Passa a variável para o ambiente do Build
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
+# ------------------------------
 
-# MUDANÇA CRÍTICA: Copiamos apenas o package.json inicialmente.
-# Isso evita o erro "file not found" se o yarn.lock não existir.
-COPY package.json ./
-
-# MUDANÇA: Usamos YARN em vez de NPM
-# O network-timeout evita falhas se a internet do build oscilar
-RUN yarn install --network-timeout 100000
-
+# Copia o resto do código
 COPY . .
 
-# Executa o build usando o script do package.json ("craco build")
+# Faz o build (agora com a variável certa!)
 RUN yarn build
 
-# Estágio 2: Servidor Nginx (Leve e Rápido)
+# Estágio 2: Servidor Nginx (Produção)
 FROM nginx:alpine
-
-# Copia a pasta 'build' gerada pelo Craco
 COPY --from=build /app/build /usr/share/nginx/html
-
-# Configura a porta 8080 para o Cloud Run
-RUN sed -i 's/listen[[:space:]]*80;/listen 8080;/g' /etc/nginx/conf.d/default.conf
-
-EXPOSE 8080
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
