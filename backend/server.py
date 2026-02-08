@@ -1,19 +1,21 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
+from bson import ObjectId
+from gridfs.errors import NoFile
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone
 import jwt
 import bcrypt
-import shutil
+import mimetypes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -27,6 +29,7 @@ if not db_name:
     raise RuntimeError("DB_NAME is not set and no default could be applied.")
 client = AsyncIOMotorClient(mongo_url)
 db = client[db_name]
+uploads_bucket = AsyncIOMotorGridFSBucket(db, bucket_name="uploads")
 
 # JWT Config
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default-secret-key')
@@ -344,19 +347,61 @@ async def bulk_import_miracles(data: BulkImportRequest, user: dict = Depends(get
 
 @api_router.post("/upload")
 async def upload_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
-    file_id = str(uuid.uuid4())
     extension = Path(file.filename).suffix
-    filename = f"{file_id}{extension}"
-    file_path = UPLOAD_DIR / filename
-    
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    content_type = file.content_type or mimetypes.guess_type(file.filename)[0] or "application/octet-stream"
+
+    upload_stream = await uploads_bucket.open_upload_stream(
+        file.filename,
+        metadata={
+            "content_type": content_type,
+            "extension": extension,
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+        },
+    )
+
+    while chunk := await file.read(1024 * 1024):
+        await upload_stream.write(chunk)
+    await upload_stream.close()
+
+    file_id = str(upload_stream._id)
+    filename = f"{file_id}{extension}" if extension else file_id
     
     return {
+        "id": file_id,
         "filename": filename,
         "original_name": file.filename,
+        "content_type": content_type,
         "url": f"/api/uploads/{filename}"
     }
+
+
+@api_router.get("/uploads/{file_key}")
+async def get_uploaded_file(file_key: str):
+    file_id = file_key.split(".", 1)[0]
+
+    if ObjectId.is_valid(file_id):
+        try:
+            grid_out = await uploads_bucket.open_download_stream(ObjectId(file_id))
+        except NoFile:
+            raise HTTPException(status_code=404, detail="File not found")
+
+        metadata = grid_out.metadata or {}
+        content_type = metadata.get("content_type") or mimetypes.guess_type(grid_out.filename)[0] or "application/octet-stream"
+        headers = {
+            "Cache-Control": "public, max-age=31536000, immutable",
+            "Content-Disposition": f'inline; filename="{grid_out.filename}"',
+        }
+        return StreamingResponse(grid_out, media_type=content_type, headers=headers)
+
+    legacy_file = UPLOAD_DIR / file_key
+    if legacy_file.exists() and legacy_file.is_file():
+        return FileResponse(
+            path=legacy_file,
+            media_type=mimetypes.guess_type(legacy_file.name)[0] or "application/octet-stream",
+            headers={"Cache-Control": "public, max-age=31536000, immutable"},
+        )
+
+    raise HTTPException(status_code=404, detail="File not found")
 
 # ==================== FILTERS DATA ====================
 
@@ -448,9 +493,6 @@ async def get_json_template():
 @api_router.get("/")
 async def root():
     return {"message": "Milagres Eucarísticos API"}
-
-# Mount uploads as static files
-app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 app.include_router(api_router)
 
