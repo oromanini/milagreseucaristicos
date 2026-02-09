@@ -19,7 +19,9 @@ import {
   Quote,
   Sparkles,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { API_BASE_URL, API_URL } from '../lib/api';
