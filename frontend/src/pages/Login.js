@@ -10,15 +10,13 @@ import { toast } from 'sonner';
 
 export const Login = () => {
   const { t } = useLanguage();
-  const { login, register } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    name: ''
+    password: ''
   });
 
   const handleSubmit = async (e) => {
@@ -26,11 +24,7 @@ export const Login = () => {
     setLoading(true);
     
     try {
-      if (isLogin) {
-        await login(formData.email, formData.password);
-      } else {
-        await register(formData.email, formData.password, formData.name);
-      }
+      await login(formData.email, formData.password);
       toast.success(t('success'));
       navigate('/admin');
     } catch (error) {
@@ -49,7 +43,7 @@ export const Login = () => {
           <div className="text-center mb-8">
             <span className="text-4xl mb-4 block">✝️</span>
             <h1 className="font-serif text-2xl text-[#E5E5E5]">
-              {isLogin ? t('signIn') : t('signUp')}
+              {t('signIn')}
             </h1>
             <p className="text-[#A1A1AA] text-sm mt-2">
               {t('admin')}
@@ -58,21 +52,6 @@ export const Login = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-[#A1A1AA]">{t('name')}</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required={!isLogin}
-                  className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5]"
-                  data-testid="name-input"
-                />
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="email" className="text-[#A1A1AA]">{t('email')}</Label>
               <Input
@@ -107,25 +86,12 @@ export const Login = () => {
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
-              ) : isLogin ? (
-                t('signIn')
               ) : (
-                t('signUp')
+                t('signIn')
               )}
             </Button>
           </form>
 
-          {/* Toggle */}
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-[#D4AF37] text-sm hover:underline"
-              data-testid="toggle-auth-btn"
-            >
-              {isLogin ? t('noAccount') : t('hasAccount')}
-            </button>
-          </div>
         </div>
       </div>
     </div>
