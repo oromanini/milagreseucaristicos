@@ -106,6 +106,7 @@ export const MiracleForm = () => {
     if (type === 'image') return 'image/*';
     if (type === 'pdf') return '.pdf,application/pdf';
     if (type === 'youtube') return '';
+    if (type === 'audio') return 'audio/*';
     return 'video/*';
   };
 
@@ -496,6 +497,7 @@ export const MiracleForm = () => {
                         <SelectItem value="video" className="text-[#E5E5E5]">Vídeo</SelectItem>
                         <SelectItem value="youtube" className="text-[#E5E5E5]">YouTube</SelectItem>
                         <SelectItem value="pdf" className="text-[#E5E5E5]">PDF</SelectItem>
+                        <SelectItem value="audio" className="text-[#E5E5E5]">Áudio</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
