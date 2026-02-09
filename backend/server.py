@@ -9,7 +9,7 @@ from gridfs.errors import NoFile
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone
@@ -154,6 +154,19 @@ class MiracleResponse(MiracleBase):
 
 class BulkImportRequest(BaseModel):
     miracles: List[MiracleCreate]
+
+
+class ContactMessageCreate(BaseModel):
+    type: str  # duvida, reclamacao, sugestao
+    email: EmailStr
+    subject: Optional[str] = None
+    message: str
+
+
+class ContactMessageResponse(ContactMessageCreate):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    created_at: str
 
 # ==================== AUTH HELPERS ====================
 
@@ -342,6 +355,39 @@ async def bulk_import_miracles(data: BulkImportRequest, user: dict = Depends(get
         "imported": imported,
         "errors": errors
     }
+
+
+# ==================== CONTACT MESSAGES ====================
+
+@api_router.post("/contact-messages", response_model=ContactMessageResponse, status_code=status.HTTP_201_CREATED)
+async def create_contact_message(data: ContactMessageCreate):
+    normalized_type = data.type.strip().lower()
+    allowed_types = {"duvida", "reclamacao", "sugestao"}
+    if normalized_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid message type")
+
+    message_text = data.message.strip()
+    if len(message_text) < 10:
+        raise HTTPException(status_code=400, detail="Message must contain at least 10 characters")
+
+    now = datetime.now(timezone.utc).isoformat()
+    contact_doc = {
+        "id": str(uuid.uuid4()),
+        "type": normalized_type,
+        "email": str(data.email).strip().lower(),
+        "subject": data.subject.strip() if data.subject else None,
+        "message": message_text,
+        "created_at": now,
+    }
+
+    await db.contact_messages.insert_one(contact_doc)
+    return contact_doc
+
+
+@api_router.get("/contact-messages", response_model=List[ContactMessageResponse])
+async def list_contact_messages(user: dict = Depends(get_current_user)):
+    messages = await db.contact_messages.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return messages
 
 # ==================== FILE UPLOAD ====================
 
