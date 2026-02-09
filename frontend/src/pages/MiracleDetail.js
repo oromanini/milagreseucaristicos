@@ -48,6 +48,7 @@ export const MiracleDetail = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [pdfPages, setPdfPages] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [audioDiagnostics, setAudioDiagnostics] = useState({});
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -69,6 +70,10 @@ export const MiracleDetail = () => {
     window.scrollTo({ top: 0, behavior: 'auto' });
     setActiveSection('overview');
     fetchMiracle();
+  }, [id]);
+
+  useEffect(() => {
+    setAudioDiagnostics({});
   }, [id]);
 
   const fetchMiracle = async () => {
@@ -158,6 +163,43 @@ export const MiracleDetail = () => {
     if (cleanUrl.endsWith('.aac')) return 'audio/aac';
     if (cleanUrl.endsWith('.webm')) return 'audio/webm';
     return null;
+  };
+
+  const updateAudioDiagnostic = (audioKey, partialState) => {
+    setAudioDiagnostics((prev) => ({
+      ...prev,
+      [audioKey]: {
+        ...(prev[audioKey] || {}),
+        ...partialState,
+      },
+    }));
+  };
+
+  const handleAudioLoadedMetadata = (audioKey, event) => {
+    const durationSeconds = event?.currentTarget?.duration;
+    const isDurationValid = Number.isFinite(durationSeconds) && durationSeconds > 0;
+
+    updateAudioDiagnostic(audioKey, {
+      status: isDurationValid ? 'ready' : 'warning',
+      detail: isDurationValid
+        ? `Duração detectada: ${durationSeconds.toFixed(1)}s`
+        : 'O arquivo abriu, mas a duração retornou 0s. Isso geralmente indica arquivo vazio/corrompido.',
+    });
+  };
+
+  const handleAudioError = (audioKey, mediaUrl, event) => {
+    const mediaErrorCode = event?.currentTarget?.error?.code;
+    const codeMap = {
+      1: 'MEDIA_ERR_ABORTED (carregamento interrompido)',
+      2: 'MEDIA_ERR_NETWORK (falha de rede)',
+      3: 'MEDIA_ERR_DECODE (erro de decodificação)',
+      4: 'MEDIA_ERR_SRC_NOT_SUPPORTED (URL/formato não suportado)'
+    };
+
+    updateAudioDiagnostic(audioKey, {
+      status: 'error',
+      detail: `Falha ao carregar áudio (${codeMap[mediaErrorCode] || 'erro desconhecido'}). URL: ${mediaUrl}`,
+    });
   };
 
 
@@ -330,15 +372,38 @@ export const MiracleDetail = () => {
                     {audios.map((item, index) => {
                       const mediaUrl = resolveMediaUrl(item.url, 'audio');
                       const audioMimeType = getAudioMimeType(mediaUrl);
+                      const audioKey = `${item.url}-summary-${index}`;
+                      const diagnostic = audioDiagnostics[audioKey];
 
                       return (
-                        <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
-                          <audio controls playsInline preload="metadata" className="w-full mb-2" src={mediaUrl}>
+                        <div key={audioKey} className="border border-[#27272A] bg-[#0A0A0B] p-3">
+                          <audio
+                            controls
+                            playsInline
+                            preload="metadata"
+                            className="w-full mb-2"
+                            onLoadedMetadata={(event) => handleAudioLoadedMetadata(audioKey, event)}
+                            onError={(event) => handleAudioError(audioKey, mediaUrl, event)}
+                          >
                             {audioMimeType && (
                               <source src={mediaUrl} type={audioMimeType} />
                             )}
+                            {!audioMimeType && <source src={mediaUrl} />}
                             Seu navegador não suporta áudio.
                           </audio>
+                          {diagnostic?.detail && (
+                            <p
+                              className={`text-xs mb-2 ${
+                                diagnostic.status === 'error'
+                                  ? 'text-red-400'
+                                  : diagnostic.status === 'warning'
+                                    ? 'text-amber-300'
+                                    : 'text-emerald-400'
+                              }`}
+                            >
+                              {diagnostic.detail}
+                            </p>
+                          )}
                           <a
                             href={mediaUrl}
                             target="_blank"
