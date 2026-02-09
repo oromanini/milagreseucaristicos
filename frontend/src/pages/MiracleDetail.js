@@ -107,8 +107,7 @@ export const MiracleDetail = () => {
   };
 
   const getPdfViewerUrl = (url, page) => {
-    const zoom = isMobile ? '75' : 'page-width';
-    return `${url}#zoom=${zoom}&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
+    return `${url}#zoom=page-width&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
   };
 
   const getAudioMimeType = (url) => {
@@ -362,7 +361,7 @@ export const MiracleDetail = () => {
                           <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>
                         </div>
 
-                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-x-auto">
+                        <div className={`rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-x-auto ${isMobile ? '-mx-8 rounded-none border-x-0' : ''}`}>
                           <iframe
                             src={getPdfViewerUrl(item.url, currentPage)}
                             title={item.title || `Documento PDF ${index + 1}`}
