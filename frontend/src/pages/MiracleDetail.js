@@ -13,6 +13,7 @@ import {
   Microscope,
   Church,
   Image,
+  Headphones,
   FileText,
   Quote,
   Sparkles,
@@ -26,7 +27,9 @@ import { API_URL } from '../lib/api';
 
 const API = API_URL;
 
-const sections = [
+const baseSections = [
+  { id: 'audio', icon: Headphones, label: 'Áudio' },
+  { id: 'pdf', icon: FileText, labelKey: 'documents' },
   { id: 'overview', icon: BookOpen, labelKey: 'historicalContext' },
   { id: 'phenomenon', icon: Sparkles, labelKey: 'phenomenon' },
   { id: 'timeline', icon: Calendar, labelKey: 'timeline' },
@@ -94,13 +97,47 @@ export const MiracleDetail = () => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
-  const prevSection = sections[currentSectionIndex - 1];
-  const nextSection = sections[currentSectionIndex + 1];
   const imageMedia = miracle?.media?.filter(item => item.type === 'image') || [];
   const videos = miracle?.media?.filter(item => item.type === 'video' || item.type === 'youtube') || [];
   const audios = miracle?.media?.filter(item => item.type === 'audio') || [];
   const pdfs = miracle?.media?.filter(item => item.type === 'pdf') || [];
+  const sections = baseSections.filter((section) => {
+    if (section.id === 'audio') return audios.length > 0;
+    if (section.id === 'pdf') return pdfs.length > 0;
+    return true;
+  });
+  const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
+  const prevSection = sections[currentSectionIndex - 1];
+  const nextSection = sections[currentSectionIndex + 1];
+
+  useEffect(() => {
+    const sectionElements = sections
+      .map(({ id: sectionId }) => document.getElementById(sectionId))
+      .filter(Boolean);
+
+    if (sectionElements.length === 0) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSections = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleSections.length > 0) {
+          setActiveSection(visibleSections[0].target.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: [0.1, 0.25, 0.4, 0.6],
+      }
+    );
+
+    sectionElements.forEach((sectionElement) => observer.observe(sectionElement));
+
+    return () => observer.disconnect();
+  }, [sections]);
 
   if (loading) {
     return (
@@ -148,7 +185,7 @@ export const MiracleDetail = () => {
                     data-testid={`nav-${section.id}`}
                   >
                     <section.icon className="w-4 h-4" />
-                    {t(section.labelKey)}
+                    {section.labelKey ? t(section.labelKey) : section.label}
                   </button>
                 ))}
               </nav>
@@ -207,33 +244,42 @@ export const MiracleDetail = () => {
               </div>
             </header>
 
-            {/* Summary */}
+            {audios.length > 0 && (
+              <section id="audio" className="scroll-mt-24 animate-fade-in-up" data-testid="section-audio">
+                <div className="flex items-center gap-3 mb-6">
+                  <Headphones className="w-5 h-5 text-[#D4AF37]" />
+                  <h2 className="font-serif text-2xl text-[#E5E5E5]">Áudio</h2>
+                </div>
+
+                <div className="bg-[#121214] border border-[#27272A] p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-sm" role="img" aria-label="Português do Brasil">🇧🇷</span>
+                    <h3 className="text-[#E5E5E5] font-serif text-lg">Áudio do resumo (PT-BR)</h3>
+                  </div>
+                  <p className="text-[#A1A1AA] text-xs mb-4">No momento, o áudio está disponível apenas em português do Brasil.</p>
+                  <div className="space-y-3">
+                    {audios.map((item, index) => (
+                      <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
+                        <audio controls className="w-full mb-2">
+                          <source src={item.url} />
+                          Seu navegador não suporta áudio.
+                        </audio>
+                        <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {audios.length > 0 && <Separator className="bg-[#27272A]" />}
+
             {pdfs.length > 0 && (
               <section id="pdf" className="scroll-mt-24 animate-fade-in-up" data-testid="section-pdf">
                 <div className="flex items-center gap-3 mb-6">
                   <FileText className="w-5 h-5 text-[#D4AF37]" />
                   <h2 className="font-serif text-2xl text-[#E5E5E5]">Documentos (PDF)</h2>
                 </div>
-                {audios.length > 0 && (
-                  <div className="bg-[#121214] border border-[#27272A] p-4 mb-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-sm" role="img" aria-label="Português do Brasil">🇧🇷</span>
-                      <h3 className="text-[#E5E5E5] font-serif text-lg">Áudio do resumo (PT-BR)</h3>
-                    </div>
-                    <p className="text-[#A1A1AA] text-xs mb-4">No momento, o áudio está disponível apenas em português do Brasil.</p>
-                    <div className="space-y-3">
-                      {audios.map((item, index) => (
-                        <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
-                          <audio controls className="w-full mb-2">
-                            <source src={item.url} />
-                            Seu navegador não suporta áudio.
-                          </audio>
-                          <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 <div className="grid grid-cols-1 gap-4">
                   {pdfs.map((item, index) => {
@@ -528,7 +574,7 @@ export const MiracleDetail = () => {
                   data-testid="prev-section-btn"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  <span className="text-sm uppercase tracking-wider">{t(prevSection.labelKey)}</span>
+                  <span className="text-sm uppercase tracking-wider">{prevSection.labelKey ? t(prevSection.labelKey) : prevSection.label}</span>
                 </button>
               ) : <div />}
               
@@ -538,7 +584,7 @@ export const MiracleDetail = () => {
                   className="flex items-center gap-2 text-[#A1A1AA] hover:text-[#D4AF37] transition-colors"
                   data-testid="next-section-btn"
                 >
-                  <span className="text-sm uppercase tracking-wider">{t(nextSection.labelKey)}</span>
+                  <span className="text-sm uppercase tracking-wider">{nextSection.labelKey ? t(nextSection.labelKey) : nextSection.label}</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}
