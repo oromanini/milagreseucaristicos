@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -47,9 +47,22 @@ export const MiracleDetail = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedImage, setSelectedImage] = useState(null);
   const [pdfPages, setPdfPages] = useState({});
-  const isMobile = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 767px)').matches;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
+    updateIsMobile();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', updateIsMobile);
+      return () => mediaQuery.removeEventListener('change', updateIsMobile);
+    }
+
+    mediaQuery.addListener(updateIsMobile);
+    return () => mediaQuery.removeListener(updateIsMobile);
   }, []);
 
   useEffect(() => {
@@ -93,7 +106,19 @@ export const MiracleDetail = () => {
     });
   };
 
-  const getPdfViewerUrl = (url, page) => `${url}#zoom=page-width&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
+  const getPdfViewerUrl = (url, page) => {
+    const zoom = isMobile ? '75' : 'page-width';
+    return `${url}#zoom=${zoom}&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
+  };
+
+  const getAudioMimeType = (url) => {
+    if (!url) return 'audio/mpeg';
+    const cleanUrl = url.split('?')[0].toLowerCase();
+    if (cleanUrl.endsWith('.ogg')) return 'audio/ogg';
+    if (cleanUrl.endsWith('.wav')) return 'audio/wav';
+    if (cleanUrl.endsWith('.m4a')) return 'audio/mp4';
+    return 'audio/mpeg';
+  };
 
 
   const scrollToSection = (sectionId) => {
@@ -264,10 +289,18 @@ export const MiracleDetail = () => {
                   <div className="space-y-3">
                     {audios.map((item, index) => (
                       <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
-                        <audio controls playsInline preload="metadata" className="w-full mb-2" controlsList="nodownload noplaybackrate">
-                          <source src={item.url} />
+                        <audio controls playsInline preload="metadata" className="w-full mb-2">
+                          <source src={item.url} type={getAudioMimeType(item.url)} />
                           Seu navegador não suporta áudio.
                         </audio>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mb-2 hover:underline"
+                        >
+                          Abrir áudio em nova aba <ExternalLink className="w-3 h-3" />
+                        </a>
                         <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
                       </div>
                     ))}
@@ -329,11 +362,11 @@ export const MiracleDetail = () => {
                           <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>
                         </div>
 
-                        <div className="rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
+                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-x-auto">
                           <iframe
                             src={getPdfViewerUrl(item.url, currentPage)}
                             title={item.title || `Documento PDF ${index + 1}`}
-                            className="w-full h-[70vh] min-h-[420px] md:min-h-[540px]"
+                            className="w-full h-[58vh] min-h-[360px] md:h-[70vh] md:min-h-[540px]"
                           />
                         </div>
                         {isMobile && (
