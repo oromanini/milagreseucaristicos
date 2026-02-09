@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
+import { PdfCanvasViewer } from '../components/PdfCanvasViewer';
 import {
   ArrowLeft,
   MapPin,
@@ -18,8 +19,6 @@ import {
   Quote,
   Sparkles,
   Loader2,
-  ChevronRight,
-  ChevronLeft,
   ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -46,34 +45,7 @@ export const MiracleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedImage, setSelectedImage] = useState(null);
-  const [pdfPages, setPdfPages] = useState({});
-  const [isMobile, setIsMobile] = useState(false);
-  const [isIOSDevice, setIsIOSDevice] = useState(false);
   const [audioDiagnostics, setAudioDiagnostics] = useState({});
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
-    const updateIsMobile = () => setIsMobile(mediaQuery.matches);
-    updateIsMobile();
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', updateIsMobile);
-      return () => mediaQuery.removeEventListener('change', updateIsMobile);
-    }
-
-    mediaQuery.addListener(updateIsMobile);
-    return () => mediaQuery.removeListener(updateIsMobile);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const userAgent = window.navigator.userAgent || '';
-    const isTouchMac = /Macintosh/.test(userAgent) && 'ontouchend' in document;
-    setIsIOSDevice(/iPad|iPhone|iPod/.test(userAgent) || isTouchMac);
-  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -112,14 +84,6 @@ export const MiracleDetail = () => {
   };
 
 
-  const changePdfPage = (pdfKey, direction) => {
-    setPdfPages((prev) => {
-      const currentPage = prev[pdfKey] || 1;
-      const nextPage = Math.max(1, currentPage + direction);
-      return { ...prev, [pdfKey]: nextPage };
-    });
-  };
-
   const resolveMediaUrl = (url, type = '') => {
     if (!url || typeof url !== 'string') return '';
 
@@ -150,37 +114,6 @@ export const MiracleDetail = () => {
     }
 
     return trimmedUrl;
-  };
-
-  const getPdfViewerUrl = (url, page) => {
-    if (!url) return '';
-
-    const appendViewerParams = (baseUrl, params) => {
-      const [cleanUrl, hashFragment = ''] = baseUrl.split('#');
-      const hashParams = new URLSearchParams(hashFragment);
-
-      Object.entries(params).forEach(([key, value]) => {
-        hashParams.set(key, String(value));
-      });
-
-      return `${cleanUrl}#${hashParams.toString()}`;
-    };
-
-    if (isIOSDevice) {
-      return appendViewerParams(url, {
-        page,
-        zoom: 'page-width',
-        view: 'FitH',
-        toolbar: 0,
-        navpanes: 0,
-      });
-    }
-
-    const pageQuery = isMobile
-      ? `#page=${page}&view=FitH`
-      : `#zoom=page-width&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
-
-    return `${url}${pageQuery}`;
   };
 
   const getAudioMimeType = (url) => {
@@ -507,7 +440,6 @@ export const MiracleDetail = () => {
                 <div className="grid grid-cols-1 gap-4">
                   {pdfs.map((item, index) => {
                     const pdfKey = `${item.url}-${index}`;
-                    const currentPage = pdfPages[pdfKey] || 1;
                     const mediaUrl = resolveMediaUrl(item.url, 'pdf');
 
                     return (
@@ -517,58 +449,12 @@ export const MiracleDetail = () => {
                           <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
                         )}
 
-                        <div className="flex flex-wrap items-center gap-2 mt-4 mb-3">
-                          {!isIOSDevice && (
-                            <>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => changePdfPage(pdfKey, -1)}
-                                disabled={currentPage <= 1}
-                                className="border-[#27272A]"
-                              >
-                                <ChevronLeft className="w-4 h-4 mr-1" />
-                                Página anterior
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => changePdfPage(pdfKey, 1)}
-                                className="border-[#27272A]"
-                              >
-                                Próxima página
-                                <ChevronRight className="w-4 h-4 ml-1" />
-                              </Button>
-                            </>
-                          )}
-                          <a
-                            href={mediaUrl}
-                            download
-                            className="inline-flex items-center gap-1 h-9 px-3 py-2 rounded-md border border-[#27272A] text-[#E5E5E5] text-sm hover:border-[#D4AF37]"
-                          >
-                            Baixar PDF <FileText className="w-4 h-4" />
-                          </a>
-                          {!isIOSDevice && <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>}
-                          {isIOSDevice && <span className="text-xs text-[#A1A1AA]">No iPhone/iPad, se necessário, abra em nova aba para facilitar a navegação.</span>}
-                        </div>
-
-                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
-                          <iframe
-                            src={getPdfViewerUrl(mediaUrl, currentPage)}
+                        <div className="mt-4">
+                          <PdfCanvasViewer
+                            url={mediaUrl}
                             title={item.title || `Documento PDF ${index + 1}`}
-                            className="w-full h-[56vh] min-h-[320px] max-h-[720px] md:h-[70vh] md:min-h-[540px]"
                           />
                         </div>
-                        <a
-                          href={mediaUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
-                        >
-                          Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
-                        </a>
                       </div>
                     );
                   })}
