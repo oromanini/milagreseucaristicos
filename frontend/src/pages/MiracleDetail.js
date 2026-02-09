@@ -201,7 +201,28 @@ export const MiracleDetail = () => {
                   <FileText className="w-5 h-5 text-[#D4AF37]" />
                   <h2 className="font-serif text-2xl text-[#E5E5E5]">Documentos (PDF)</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {audios.length > 0 && (
+                  <div className="bg-[#121214] border border-[#27272A] p-4 mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-sm" role="img" aria-label="Português do Brasil">🇧🇷</span>
+                      <h3 className="text-[#E5E5E5] font-serif text-lg">Áudio do resumo (PT-BR)</h3>
+                    </div>
+                    <p className="text-[#A1A1AA] text-xs mb-4">No momento, o áudio está disponível apenas em português do Brasil.</p>
+                    <div className="space-y-3">
+                      {audios.map((item, index) => (
+                        <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
+                          <audio controls className="w-full mb-2">
+                            <source src={item.url} />
+                            Seu navegador não suporta áudio.
+                          </audio>
+                          <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-4">
                   {pdfs.map((item, index) => (
                     <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
                       <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
@@ -212,7 +233,7 @@ export const MiracleDetail = () => {
                         <iframe
                           src={`${item.url}#toolbar=0&navpanes=0&scrollbar=1`}
                           title={item.title || `Documento PDF ${index + 1}`}
-                          className="w-full h-56"
+                          className="w-full h-[70vh] min-h-[420px]"
                         />
                       </div>
                       <a
@@ -368,7 +389,7 @@ export const MiracleDetail = () => {
                 <h2 className="font-serif text-2xl text-[#E5E5E5]">{t('media')}</h2>
               </div>
               
-              {(videos.length > 0 || audios.length > 0) ? (
+              {videos.length > 0 ? (
                 <div className="space-y-8">
                   {videos.length > 0 && (
                     <div>
@@ -409,33 +430,6 @@ export const MiracleDetail = () => {
                     </div>
                   )}
 
-                  {audios.length > 0 && (
-                    <div>
-                      <h3 className="text-[#E5E5E5] font-serif text-xl mb-4">Áudios</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {audios.map((item, index) => (
-                          <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
-                            <audio controls className="w-full mb-3">
-                              <source src={item.url} />
-                              Seu navegador não suporta áudio.
-                            </audio>
-                            <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Áudio'}</h4>
-                            {item.description && (
-                              <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
-                            )}
-                            <a
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-2 hover:underline"
-                            >
-                              Abrir mídia <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <p className="text-[#52525B] italic">{t('noResults')}</p>
