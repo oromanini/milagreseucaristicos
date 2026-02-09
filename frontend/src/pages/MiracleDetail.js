@@ -44,6 +44,8 @@ export const MiracleDetail = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    setActiveSection('overview');
     fetchMiracle();
   }, [id]);
 
@@ -84,6 +86,7 @@ export const MiracleDetail = () => {
   const nextSection = sections[currentSectionIndex + 1];
   const imageMedia = miracle?.media?.filter(item => item.type === 'image') || [];
   const videos = miracle?.media?.filter(item => item.type === 'video' || item.type === 'youtube') || [];
+  const audios = miracle?.media?.filter(item => item.type === 'audio') || [];
   const pdfs = miracle?.media?.filter(item => item.type === 'pdf') || [];
 
   if (loading) {
@@ -192,6 +195,42 @@ export const MiracleDetail = () => {
             </header>
 
             {/* Summary */}
+            {pdfs.length > 0 && (
+              <section id="pdf" className="scroll-mt-24 animate-fade-in-up" data-testid="section-pdf">
+                <div className="flex items-center gap-3 mb-6">
+                  <FileText className="w-5 h-5 text-[#D4AF37]" />
+                  <h2 className="font-serif text-2xl text-[#E5E5E5]">Documentos (PDF)</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {pdfs.map((item, index) => (
+                    <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
+                      <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
+                      {item.description && (
+                        <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
+                      )}
+                      <div className="mt-4 rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
+                        <iframe
+                          src={`${item.url}#toolbar=0&navpanes=0&scrollbar=1`}
+                          title={item.title || `Documento PDF ${index + 1}`}
+                          className="w-full h-56"
+                        />
+                      </div>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
+                      >
+                        Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {pdfs.length > 0 && <Separator className="bg-[#27272A]" />}
+
             {(miracle.summary || getTranslated('summary')) && (
               <section className="bg-[#121214] border border-[rgba(212,175,55,0.3)] p-6 animate-fade-in-up" data-testid="summary-section">
                 <div className="flex items-center gap-2 mb-4">
@@ -329,7 +368,7 @@ export const MiracleDetail = () => {
                 <h2 className="font-serif text-2xl text-[#E5E5E5]">{t('media')}</h2>
               </div>
               
-              {(videos.length > 0 || pdfs.length > 0) ? (
+              {(videos.length > 0 || audios.length > 0) ? (
                 <div className="space-y-8">
                   {videos.length > 0 && (
                     <div>
@@ -370,30 +409,27 @@ export const MiracleDetail = () => {
                     </div>
                   )}
 
-                  {pdfs.length > 0 && (
+                  {audios.length > 0 && (
                     <div>
-                      <h3 className="text-[#E5E5E5] font-serif text-xl mb-4">Documentos (PDF)</h3>
+                      <h3 className="text-[#E5E5E5] font-serif text-xl mb-4">Áudios</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {pdfs.map((item, index) => (
+                        {audios.map((item, index) => (
                           <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
-                            <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
+                            <audio controls className="w-full mb-3">
+                              <source src={item.url} />
+                              Seu navegador não suporta áudio.
+                            </audio>
+                            <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Áudio'}</h4>
                             {item.description && (
                               <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
                             )}
-                            <div className="mt-4 rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
-                              <iframe
-                                src={`${item.url}#toolbar=0&navpanes=0&scrollbar=1`}
-                                title={item.title || `Documento PDF ${index + 1}`}
-                                className="w-full h-56"
-                              />
-                            </div>
                             <a
                               href={item.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
+                              className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-2 hover:underline"
                             >
-                              Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
+                              Abrir mídia <ExternalLink className="w-3 h-3" />
                             </a>
                           </div>
                         ))}
