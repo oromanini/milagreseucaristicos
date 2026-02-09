@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -47,6 +47,10 @@ export const MiracleDetail = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedImage, setSelectedImage] = useState(null);
   const [pdfPages, setPdfPages] = useState({});
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 767px)').matches;
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -89,7 +93,7 @@ export const MiracleDetail = () => {
     });
   };
 
-  const getPdfViewerUrl = (url, page) => `${url}#toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
+  const getPdfViewerUrl = (url, page) => `${url}#zoom=page-width&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
 
 
   const scrollToSection = (sectionId) => {
@@ -260,7 +264,7 @@ export const MiracleDetail = () => {
                   <div className="space-y-3">
                     {audios.map((item, index) => (
                       <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
-                        <audio controls className="w-full mb-2">
+                        <audio controls playsInline preload="metadata" className="w-full mb-2" controlsList="nodownload noplaybackrate">
                           <source src={item.url} />
                           Seu navegador não suporta áudio.
                         </audio>
@@ -329,9 +333,23 @@ export const MiracleDetail = () => {
                           <iframe
                             src={getPdfViewerUrl(item.url, currentPage)}
                             title={item.title || `Documento PDF ${index + 1}`}
-                            className="w-full h-[70vh] min-h-[420px]"
+                            className="w-full h-[70vh] min-h-[420px] md:min-h-[540px]"
                           />
                         </div>
+                        {isMobile && (
+                          <p className="text-xs text-[#A1A1AA] mt-3">
+                            Se o PDF aparecer com zoom elevado no celular, use{' '}
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#D4AF37] hover:underline"
+                            >
+                              Abrir PDF em nova aba
+                            </a>
+                            {' '}para melhor visualização.
+                          </p>
+                        )}
                         <a
                           href={item.url}
                           target="_blank"
