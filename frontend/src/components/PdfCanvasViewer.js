@@ -61,6 +61,8 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
   const canvasRef = useRef(null);
   const wrapperRef = useRef(null);
   const pdfDocRef = useRef(null);
+  const renderTaskRef = useRef(null);
+  const renderRequestIdRef = useRef(0);
   const [page, setPage] = useState(1);
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -102,6 +104,10 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
 
     return () => {
       cancelled = true;
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+        renderTaskRef.current = null;
+      }
       if (loadingTask) loadingTask.destroy();
       if (pdfDocRef.current) pdfDocRef.current.destroy();
       pdfDocRef.current = null;
@@ -112,13 +118,22 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
     const pdfDoc = pdfDocRef.current;
     const canvas = canvasRef.current;
     const wrapper = wrapperRef.current;
+    const requestId = renderRequestIdRef.current + 1;
+    renderRequestIdRef.current = requestId;
 
     if (!pdfDoc || !canvas || !wrapper || !numPages) return;
 
     setRendering(true);
 
     try {
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+        renderTaskRef.current = null;
+      }
+
       const pdfPage = await pdfDoc.getPage(page);
+      if (renderRequestIdRef.current !== requestId) return;
+
       const viewport = pdfPage.getViewport({ scale: 1 });
       const scale = getViewportScale(viewport.width, wrapper.clientWidth - 16);
       const scaledViewport = pdfPage.getViewport({ scale });
@@ -127,12 +142,22 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
       canvas.width = scaledViewport.width;
       canvas.height = scaledViewport.height;
 
-      await pdfPage.render({ canvasContext: context, viewport: scaledViewport }).promise;
+      const renderTask = pdfPage.render({ canvasContext: context, viewport: scaledViewport });
+      renderTaskRef.current = renderTask;
+      await renderTask.promise;
+      if (renderTaskRef.current === renderTask) {
+        renderTaskRef.current = null;
+      }
     } catch (error) {
+      if (error?.name === 'RenderingCancelledException') {
+        return;
+      }
       console.error('Erro ao renderizar página do PDF:', error);
       toast.error('Falha ao renderizar a página do PDF.');
     } finally {
-      setRendering(false);
+      if (renderRequestIdRef.current === requestId) {
+        setRendering(false);
+      }
     }
   }, [page, numPages]);
 
