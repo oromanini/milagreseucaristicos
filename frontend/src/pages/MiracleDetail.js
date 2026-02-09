@@ -539,13 +539,21 @@ export const MiracleDetail = () => {
                           )}
                         </div>
 
-                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
-                          <iframe
-                            src={getPdfViewerUrl(mediaUrl, currentPage)}
-                            title={item.title || `Documento PDF ${index + 1}`}
-                            className="w-full h-[58vh] min-h-[360px] md:h-[70vh] md:min-h-[540px]"
-                          />
-                        </div>
+                        {isIOSDevice ? (
+                          <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] p-4">
+                            <p className="text-sm text-[#A1A1AA]">
+                              A visualização embutida do PDF no iPhone/iPad pode ficar ampliada. Use “Abrir PDF em nova aba” para ver e navegar normalmente.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
+                            <iframe
+                              src={getPdfViewerUrl(mediaUrl, currentPage)}
+                              title={item.title || `Documento PDF ${index + 1}`}
+                              className="w-full h-[56vh] min-h-[320px] max-h-[720px] md:h-[70vh] md:min-h-[540px]"
+                            />
+                          </div>
+                        )}
                         <a
                           href={mediaUrl}
                           target="_blank"
