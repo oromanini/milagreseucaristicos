@@ -107,16 +107,26 @@ export const MiracleDetail = () => {
   };
 
   const getPdfViewerUrl = (url, page) => {
+    if (!url) return '';
+
+    if (isMobile) {
+      const encodedUrl = encodeURIComponent(url);
+      return `https://docs.google.com/gview?embedded=1&url=${encodedUrl}&page=${page}`;
+    }
+
     return `${url}#zoom=page-width&view=FitH&toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
   };
 
   const getAudioMimeType = (url) => {
-    if (!url) return 'audio/mpeg';
+    if (!url) return null;
     const cleanUrl = url.split('?')[0].toLowerCase();
+    if (cleanUrl.endsWith('.mp3')) return 'audio/mpeg';
     if (cleanUrl.endsWith('.ogg')) return 'audio/ogg';
     if (cleanUrl.endsWith('.wav')) return 'audio/wav';
     if (cleanUrl.endsWith('.m4a')) return 'audio/mp4';
-    return 'audio/mpeg';
+    if (cleanUrl.endsWith('.aac')) return 'audio/aac';
+    if (cleanUrl.endsWith('.webm')) return 'audio/webm';
+    return null;
   };
 
 
@@ -286,23 +296,29 @@ export const MiracleDetail = () => {
                   </div>
                   <p className="text-[#A1A1AA] text-xs mb-4">No momento, o áudio está disponível apenas em português do Brasil.</p>
                   <div className="space-y-3">
-                    {audios.map((item, index) => (
-                      <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
-                        <audio controls playsInline preload="metadata" className="w-full mb-2">
-                          <source src={item.url} type={getAudioMimeType(item.url)} />
-                          Seu navegador não suporta áudio.
-                        </audio>
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mb-2 hover:underline"
-                        >
-                          Abrir áudio em nova aba <ExternalLink className="w-3 h-3" />
-                        </a>
-                        <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
-                      </div>
-                    ))}
+                    {audios.map((item, index) => {
+                      const audioMimeType = getAudioMimeType(item.url);
+
+                      return (
+                        <div key={`${item.url}-summary-${index}`} className="border border-[#27272A] bg-[#0A0A0B] p-3">
+                          <audio controls playsInline preload="metadata" className="w-full mb-2" src={item.url}>
+                            {audioMimeType && (
+                              <source src={item.url} type={audioMimeType} />
+                            )}
+                            Seu navegador não suporta áudio.
+                          </audio>
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mb-2 hover:underline"
+                          >
+                            Abrir áudio em nova aba <ExternalLink className="w-3 h-3" />
+                          </a>
+                          <h4 className="text-[#E5E5E5] text-sm font-medium">{item.title || 'Áudio'}</h4>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </section>
@@ -361,27 +377,13 @@ export const MiracleDetail = () => {
                           <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>
                         </div>
 
-                        <div className={`rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-x-auto ${isMobile ? '-mx-8 rounded-none border-x-0' : ''}`}>
+                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
                           <iframe
                             src={getPdfViewerUrl(item.url, currentPage)}
                             title={item.title || `Documento PDF ${index + 1}`}
                             className="w-full h-[58vh] min-h-[360px] md:h-[70vh] md:min-h-[540px]"
                           />
                         </div>
-                        {isMobile && (
-                          <p className="text-xs text-[#A1A1AA] mt-3">
-                            Se o PDF aparecer com zoom elevado no celular, use{' '}
-                            <a
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[#D4AF37] hover:underline"
-                            >
-                              Abrir PDF em nova aba
-                            </a>
-                            {' '}para melhor visualização.
-                          </p>
-                        )}
                         <a
                           href={item.url}
                           target="_blank"
