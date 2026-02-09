@@ -493,7 +493,7 @@ async def get_uploaded_file(file_key: str, request: Request):
         if parsed_range:
             start, end = parsed_range
             chunk_size = end - start + 1
-            await grid_out.seek(start)
+            grid_out.seek(start)
             chunk = await grid_out.read(chunk_size)
             headers = {
                 **base_headers,
