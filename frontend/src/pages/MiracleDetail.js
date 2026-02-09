@@ -155,8 +155,25 @@ export const MiracleDetail = () => {
   const getPdfViewerUrl = (url, page) => {
     if (!url) return '';
 
+    const appendViewerParams = (baseUrl, params) => {
+      const [cleanUrl, hashFragment = ''] = baseUrl.split('#');
+      const hashParams = new URLSearchParams(hashFragment);
+
+      Object.entries(params).forEach(([key, value]) => {
+        hashParams.set(key, String(value));
+      });
+
+      return `${cleanUrl}#${hashParams.toString()}`;
+    };
+
     if (isIOSDevice) {
-      return url;
+      return appendViewerParams(url, {
+        page,
+        zoom: 'page-width',
+        view: 'FitH',
+        toolbar: 0,
+        navpanes: 0,
+      });
     }
 
     const pageQuery = isMobile
@@ -534,26 +551,16 @@ export const MiracleDetail = () => {
                             Baixar PDF <FileText className="w-4 h-4" />
                           </a>
                           {!isIOSDevice && <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>}
-                          {isIOSDevice && (
-                            <span className="text-xs text-[#A1A1AA]">No iPhone/iPad, abra em nova aba para navegação completa.</span>
-                          )}
+                          {isIOSDevice && <span className="text-xs text-[#A1A1AA]">No iPhone/iPad, se necessário, abra em nova aba para facilitar a navegação.</span>}
                         </div>
 
-                        {isIOSDevice ? (
-                          <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] p-4">
-                            <p className="text-sm text-[#A1A1AA]">
-                              A visualização embutida do PDF no iPhone/iPad pode ficar ampliada. Use “Abrir PDF em nova aba” para ver e navegar normalmente.
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
-                            <iframe
-                              src={getPdfViewerUrl(mediaUrl, currentPage)}
-                              title={item.title || `Documento PDF ${index + 1}`}
-                              className="w-full h-[56vh] min-h-[320px] max-h-[720px] md:h-[70vh] md:min-h-[540px]"
-                            />
-                          </div>
-                        )}
+                        <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
+                          <iframe
+                            src={getPdfViewerUrl(mediaUrl, currentPage)}
+                            title={item.title || `Documento PDF ${index + 1}`}
+                            className="w-full h-[56vh] min-h-[320px] max-h-[720px] md:h-[70vh] md:min-h-[540px]"
+                          />
+                        </div>
                         <a
                           href={mediaUrl}
                           target="_blank"
