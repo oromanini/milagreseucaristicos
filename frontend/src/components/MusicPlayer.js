@@ -46,7 +46,7 @@ export const MusicPlayer = ({ className = '' }) => {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying]);
+  }, [isPlaying, volume]);
 
   return (
     <div className={`music-player ${className}`} data-testid="music-player">

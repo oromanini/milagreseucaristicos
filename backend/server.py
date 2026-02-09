@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, UploadFile, File, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import FileResponse, StreamingResponse
 from dotenv import load_dotenv
@@ -375,8 +375,40 @@ async def upload_file(file: UploadFile = File(...), user: dict = Depends(get_cur
     }
 
 
+def _parse_byte_range(range_header: str, file_size: int):
+    if not range_header or not range_header.startswith("bytes="):
+        return None
+
+    range_value = range_header.replace("bytes=", "", 1).split(",", 1)[0].strip()
+    if "-" not in range_value:
+        return None
+
+    start_str, end_str = range_value.split("-", 1)
+
+    try:
+        if start_str == "":
+            length = int(end_str)
+            if length <= 0:
+                return None
+            start = max(file_size - length, 0)
+            end = file_size - 1
+        else:
+            start = int(start_str)
+            end = int(end_str) if end_str else file_size - 1
+    except ValueError:
+        return None
+
+    start = max(start, 0)
+    end = min(end, file_size - 1)
+
+    if start > end:
+        return None
+
+    return start, end
+
+
 @api_router.get("/uploads/{file_key}")
-async def get_uploaded_file(file_key: str):
+async def get_uploaded_file(file_key: str, request: Request):
     file_id = file_key.split(".", 1)[0]
 
     if ObjectId.is_valid(file_id):
@@ -387,11 +419,34 @@ async def get_uploaded_file(file_key: str):
 
         metadata = grid_out.metadata or {}
         content_type = metadata.get("content_type") or mimetypes.guess_type(grid_out.filename)[0] or "application/octet-stream"
-        headers = {
+        file_size = int(grid_out.length)
+        range_header = request.headers.get("range")
+        parsed_range = _parse_byte_range(range_header, file_size)
+
+        base_headers = {
             "Cache-Control": "public, max-age=31536000, immutable",
             "Content-Disposition": f'inline; filename="{grid_out.filename}"',
+            "Accept-Ranges": "bytes",
         }
-        return StreamingResponse(grid_out, media_type=content_type, headers=headers)
+
+        if parsed_range:
+            start, end = parsed_range
+            chunk_size = end - start + 1
+            await grid_out.seek(start)
+            chunk = await grid_out.read(chunk_size)
+            headers = {
+                **base_headers,
+                "Content-Range": f"bytes {start}-{end}/{file_size}",
+                "Content-Length": str(len(chunk)),
+            }
+            return StreamingResponse(iter([chunk]), media_type=content_type, headers=headers, status_code=206)
+
+        full_content = await grid_out.read()
+        headers = {
+            **base_headers,
+            "Content-Length": str(file_size),
+        }
+        return StreamingResponse(iter([full_content]), media_type=content_type, headers=headers)
 
     legacy_file = UPLOAD_DIR / file_key
     if legacy_file.exists() and legacy_file.is_file():
