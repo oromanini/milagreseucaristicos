@@ -453,6 +453,21 @@ def _parse_byte_range(range_header: str, file_size: int):
     return start, end
 
 
+def _resolve_content_type(filename: str, provided_content_type: Optional[str] = None) -> str:
+    guessed_content_type = mimetypes.guess_type(filename or "")[0]
+
+    if not provided_content_type:
+        return guessed_content_type or "application/octet-stream"
+
+    normalized_content_type = provided_content_type.strip().lower()
+    generic_content_types = {"application/octet-stream", "binary/octet-stream"}
+
+    if normalized_content_type in generic_content_types and guessed_content_type:
+        return guessed_content_type
+
+    return provided_content_type
+
+
 @api_router.get("/uploads/{file_key}")
 async def get_uploaded_file(file_key: str, request: Request):
     file_id = file_key.split(".", 1)[0]
@@ -464,7 +479,7 @@ async def get_uploaded_file(file_key: str, request: Request):
             raise HTTPException(status_code=404, detail="File not found")
 
         metadata = grid_out.metadata or {}
-        content_type = metadata.get("content_type") or mimetypes.guess_type(grid_out.filename)[0] or "application/octet-stream"
+        content_type = _resolve_content_type(grid_out.filename, metadata.get("content_type"))
         file_size = int(grid_out.length)
         range_header = request.headers.get("range")
         parsed_range = _parse_byte_range(range_header, file_size)
