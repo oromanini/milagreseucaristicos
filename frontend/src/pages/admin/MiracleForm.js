@@ -147,6 +147,33 @@ export const MiracleForm = () => {
     }));
   };
 
+  // Scientific reports management
+  const addScientificReport = () => {
+    setMiracle(prev => ({
+      ...prev,
+      scientific_reports: [
+        ...prev.scientific_reports,
+        { date: '', description: '', experts: [], original_excerpts: [] }
+      ]
+    }));
+  };
+
+  const updateScientificReport = (index, field, value) => {
+    setMiracle(prev => ({
+      ...prev,
+      scientific_reports: prev.scientific_reports.map((report, i) =>
+        i === index ? { ...report, [field]: value } : report
+      )
+    }));
+  };
+
+  const removeScientificReport = (index) => {
+    setMiracle(prev => ({
+      ...prev,
+      scientific_reports: prev.scientific_reports.filter((_, i) => i !== index)
+    }));
+  };
+
   // References management
   const addReference = () => {
     setMiracle(prev => ({
@@ -410,6 +437,74 @@ export const MiracleForm = () => {
                 rows={4}
                 className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5]"
               />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-[#A1A1AA]">Parecer científico</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addScientificReport}
+                  className="border-[#D4AF37]/30 text-[#D4AF37]"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Adicionar parecer científico
+                </Button>
+              </div>
+
+              {miracle.scientific_reports.map((report, index) => (
+                <div key={index} className="bg-[#121214] border border-[#27272A] p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#D4AF37] text-sm">Parecer {index + 1}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeScientificReport(index)}
+                      className="text-red-500 hover:text-red-400"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[#A1A1AA]">Data</Label>
+                      <Input
+                        value={report.date}
+                        onChange={(e) => updateScientificReport(index, 'date', e.target.value)}
+                        placeholder="1970"
+                        className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[#A1A1AA]">Descrição</Label>
+                    <Textarea
+                      value={report.description}
+                      onChange={(e) => updateScientificReport(index, 'description', e.target.value)}
+                      rows={4}
+                      className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[#A1A1AA]">Trechos originais (um por linha)</Label>
+                    <Textarea
+                      value={(report.original_excerpts || []).join('\n')}
+                      onChange={(e) => updateScientificReport(
+                        index,
+                        'original_excerpts',
+                        e.target.value.split('\n').map(item => item.trim()).filter(Boolean)
+                      )}
+                      rows={4}
+                      className="bg-[#0A0A0B] border-[#27272A] text-[#E5E5E5]"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </TabsContent>
 

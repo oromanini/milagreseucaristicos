@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Separator } from '../components/ui/separator';
+import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
 import {
   ArrowLeft,
@@ -42,6 +43,7 @@ export const MiracleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [pdfPages, setPdfPages] = useState({});
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -74,6 +76,17 @@ export const MiracleDetail = () => {
     const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/);
     return match?.[1] ? `https://www.youtube.com/embed/${match[1]}` : null;
   };
+
+
+  const changePdfPage = (pdfKey, direction) => {
+    setPdfPages((prev) => {
+      const currentPage = prev[pdfKey] || 1;
+      const nextPage = Math.max(1, currentPage + direction);
+      return { ...prev, [pdfKey]: nextPage };
+    });
+  };
+
+  const getPdfViewerUrl = (url, page) => `${url}#toolbar=0&navpanes=0&scrollbar=1&page=${page}`;
 
 
   const scrollToSection = (sectionId) => {
@@ -223,29 +236,67 @@ export const MiracleDetail = () => {
                 )}
 
                 <div className="grid grid-cols-1 gap-4">
-                  {pdfs.map((item, index) => (
-                    <div key={`${item.url}-${index}`} className="bg-[#121214] border border-[#27272A] p-4">
-                      <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
-                      {item.description && (
-                        <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
-                      )}
-                      <div className="mt-4 rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
-                        <iframe
-                          src={`${item.url}#toolbar=0&navpanes=0&scrollbar=1`}
-                          title={item.title || `Documento PDF ${index + 1}`}
-                          className="w-full h-[70vh] min-h-[420px]"
-                        />
+                  {pdfs.map((item, index) => {
+                    const pdfKey = `${item.url}-${index}`;
+                    const currentPage = pdfPages[pdfKey] || 1;
+
+                    return (
+                      <div key={pdfKey} className="bg-[#121214] border border-[#27272A] p-4">
+                        <h4 className="text-[#E5E5E5] font-medium">{item.title || 'Documento PDF'}</h4>
+                        {item.description && (
+                          <p className="text-[#A1A1AA] text-sm mt-1">{item.description}</p>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-2 mt-4 mb-3">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => changePdfPage(pdfKey, -1)}
+                            disabled={currentPage <= 1}
+                            className="border-[#27272A]"
+                          >
+                            <ChevronLeft className="w-4 h-4 mr-1" />
+                            Página anterior
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => changePdfPage(pdfKey, 1)}
+                            className="border-[#27272A]"
+                          >
+                            Próxima página
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </Button>
+                          <a
+                            href={item.url}
+                            download
+                            className="inline-flex items-center gap-1 h-9 px-3 py-2 rounded-md border border-[#27272A] text-[#E5E5E5] text-sm hover:border-[#D4AF37]"
+                          >
+                            Baixar PDF <FileText className="w-4 h-4" />
+                          </a>
+                          <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>
+                        </div>
+
+                        <div className="rounded-md overflow-hidden border border-[#27272A] bg-[#0A0A0B]">
+                          <iframe
+                            src={getPdfViewerUrl(item.url, currentPage)}
+                            title={item.title || `Documento PDF ${index + 1}`}
+                            className="w-full h-[70vh] min-h-[420px]"
+                          />
+                        </div>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
+                        >
+                          Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[#D4AF37] text-xs mt-3 hover:underline"
-                      >
-                        Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </section>
             )}
