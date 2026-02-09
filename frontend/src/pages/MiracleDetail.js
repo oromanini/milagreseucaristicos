@@ -180,10 +180,17 @@ export const MiracleDetail = () => {
     const isDurationValid = Number.isFinite(durationSeconds) && durationSeconds > 0;
 
     updateAudioDiagnostic(audioKey, {
-      status: isDurationValid ? 'ready' : 'warning',
+      status: 'ready',
       detail: isDurationValid
         ? `Duração detectada: ${durationSeconds.toFixed(1)}s`
-        : 'O arquivo abriu, mas a duração retornou 0s. Isso geralmente indica arquivo vazio/corrompido.',
+        : 'Metadados carregados. Alguns dispositivos móveis podem não informar a duração, mesmo com reprodução normal.',
+    });
+  };
+
+  const handleAudioCanPlay = (audioKey) => {
+    updateAudioDiagnostic(audioKey, {
+      status: 'ready',
+      detail: 'Áudio pronto para reprodução.',
     });
   };
 
@@ -200,6 +207,42 @@ export const MiracleDetail = () => {
       status: 'error',
       detail: `Falha ao carregar áudio (${codeMap[mediaErrorCode] || 'erro desconhecido'}). URL: ${mediaUrl}`,
     });
+
+    probeAudioEndpoint(mediaUrl).then((probe) => {
+      if (!probe) return;
+
+      updateAudioDiagnostic(audioKey, {
+        status: probe.ok ? 'warning' : 'error',
+        detail: `Falha ao carregar áudio (${codeMap[mediaErrorCode] || 'erro desconhecido'}). ${probe.detail}. URL: ${mediaUrl}`,
+      });
+    });
+  };
+
+  const probeAudioEndpoint = async (mediaUrl) => {
+    if (!mediaUrl) return null;
+
+    try {
+      const response = await fetch(mediaUrl, {
+        method: 'GET',
+        headers: {
+          Range: 'bytes=0-1',
+        },
+      });
+
+      const contentType = response.headers.get('content-type');
+      const detailParts = [`HTTP ${response.status}`];
+      if (contentType) detailParts.push(`content-type: ${contentType}`);
+
+      return {
+        ok: response.ok,
+        detail: detailParts.join(' · '),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        detail: 'Não foi possível validar a URL via fetch (possível bloqueio de CORS/rede)',
+      };
+    }
   };
 
 
@@ -383,6 +426,7 @@ export const MiracleDetail = () => {
                             preload="metadata"
                             className="w-full mb-2"
                             onLoadedMetadata={(event) => handleAudioLoadedMetadata(audioKey, event)}
+                            onCanPlay={() => handleAudioCanPlay(audioKey)}
                             onError={(event) => handleAudioError(audioKey, mediaUrl, event)}
                           >
                             {audioMimeType && (
