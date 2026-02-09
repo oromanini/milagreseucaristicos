@@ -180,9 +180,7 @@ export const Home = () => {
           </button>
         </div>
 
-        <div className="absolute bottom-24 sm:bottom-24 inset-x-0 px-4 flex justify-center">
-          <MusicPlayer className="w-full max-w-md" />
-        </div>
+        <MusicPlayer className="absolute bottom-24 sm:bottom-20 left-6 right-6 md:left-auto md:right-10 md:w-[320px]" />
       </section>
 
       <section className="bg-[#121214] py-12 border-y border-[#27272A]" data-testid="stats-section">
