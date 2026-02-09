@@ -48,6 +48,7 @@ export const MiracleDetail = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [pdfPages, setPdfPages] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
   const [audioDiagnostics, setAudioDiagnostics] = useState({});
 
   useEffect(() => {
@@ -64,6 +65,14 @@ export const MiracleDetail = () => {
 
     mediaQuery.addListener(updateIsMobile);
     return () => mediaQuery.removeListener(updateIsMobile);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const userAgent = window.navigator.userAgent || '';
+    const isTouchMac = /Macintosh/.test(userAgent) && 'ontouchend' in document;
+    setIsIOSDevice(/iPad|iPhone|iPod/.test(userAgent) || isTouchMac);
   }, []);
 
   useEffect(() => {
@@ -145,6 +154,10 @@ export const MiracleDetail = () => {
 
   const getPdfViewerUrl = (url, page) => {
     if (!url) return '';
+
+    if (isIOSDevice) {
+      return url;
+    }
 
     const pageQuery = isMobile
       ? `#page=${page}&view=FitH`
@@ -488,27 +501,31 @@ export const MiracleDetail = () => {
                         )}
 
                         <div className="flex flex-wrap items-center gap-2 mt-4 mb-3">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => changePdfPage(pdfKey, -1)}
-                            disabled={currentPage <= 1}
-                            className="border-[#27272A]"
-                          >
-                            <ChevronLeft className="w-4 h-4 mr-1" />
-                            Página anterior
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => changePdfPage(pdfKey, 1)}
-                            className="border-[#27272A]"
-                          >
-                            Próxima página
-                            <ChevronRight className="w-4 h-4 ml-1" />
-                          </Button>
+                          {!isIOSDevice && (
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => changePdfPage(pdfKey, -1)}
+                                disabled={currentPage <= 1}
+                                className="border-[#27272A]"
+                              >
+                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                Página anterior
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => changePdfPage(pdfKey, 1)}
+                                className="border-[#27272A]"
+                              >
+                                Próxima página
+                                <ChevronRight className="w-4 h-4 ml-1" />
+                              </Button>
+                            </>
+                          )}
                           <a
                             href={mediaUrl}
                             download
@@ -516,7 +533,10 @@ export const MiracleDetail = () => {
                           >
                             Baixar PDF <FileText className="w-4 h-4" />
                           </a>
-                          <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>
+                          {!isIOSDevice && <span className="text-xs text-[#A1A1AA]">Página {currentPage}</span>}
+                          {isIOSDevice && (
+                            <span className="text-xs text-[#A1A1AA]">No iPhone/iPad, abra em nova aba para navegação completa.</span>
+                          )}
                         </div>
 
                         <div className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-hidden">
