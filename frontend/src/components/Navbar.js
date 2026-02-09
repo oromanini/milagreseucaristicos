@@ -28,6 +28,7 @@ export const Navbar = () => {
   const navLinks = [
     { path: '/', label: t('home') },
     { path: '/about', label: t('about') },
+    { path: '/contact', label: t('contact') },
   ];
 
   const isActive = (path) => location.pathname === path;

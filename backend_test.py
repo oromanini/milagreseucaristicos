@@ -274,6 +274,29 @@ class EucharisticMiraclesAPITester:
             self.log_test("Bulk import result", True, f"Imported: {imported}, Errors: {errors}")
         return success
 
+
+    def test_create_contact_message(self):
+        payload = {
+            "type": "reclamacao",
+            "email": "fiel@example.com",
+            "subject": "Possível incoerência histórica",
+            "message": "No milagre X, encontrei uma data divergente e gostaria de confirmar a fonte."
+        }
+        success, response = self.run_test("Create contact message", "POST", "contact-messages", 201, payload)
+        if success:
+            self.log_test("Contact message fields", 'id' in response and response.get('email') == payload['email'], "Payload persisted")
+        return success
+
+    def test_list_contact_messages(self):
+        if not self.token:
+            self.log_test("List contact messages", False, "No token available")
+            return False
+
+        success, response = self.run_test("List contact messages", "GET", "contact-messages", 200)
+        if success:
+            self.log_test("Contact messages list format", isinstance(response, list), f"Response type: {type(response)}")
+        return success
+
     def run_all_tests(self):
         """Run all API tests"""
         print("🚀 Starting Eucharistic Miracles API Tests")
@@ -286,6 +309,7 @@ class EucharisticMiraclesAPITester:
         self.test_filters_endpoint()
         self.test_miracles_list()
         self.test_json_template()
+        self.test_create_contact_message()
 
         # Authentication tests
         self.test_user_registration()
@@ -302,6 +326,7 @@ class EucharisticMiraclesAPITester:
             self.test_create_miracle()
             self.test_get_miracle()
             self.test_bulk_import()
+            self.test_list_contact_messages()
 
         # Print summary
         print("\n" + "=" * 60)

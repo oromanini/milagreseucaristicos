@@ -7,6 +7,7 @@ const translations = {
     // Navigation
     home: 'Início',
     about: 'Sobre',
+    contact: 'Fale Conosco',
     miracles: 'Milagres',
     admin: 'Admin',
     login: 'Entrar',
@@ -77,6 +78,22 @@ const translations = {
     noAccount: 'Não tem conta?',
     hasAccount: 'Já tem conta?',
     
+
+    // Contact
+    contactTitle: 'Fale Conosco',
+    contactDescription: 'Encontrou alguma incoerência, erro de pesquisa ou algo que incomodou no site? Envie sua dúvida, reclamação ou sugestão. Responderemos manualmente por email.',
+    contactType: 'Tipo de mensagem',
+    contactTypeQuestion: 'Dúvida',
+    contactTypeComplaint: 'Reclamação',
+    contactTypeSuggestion: 'Sugestão',
+    contactSubject: 'Assunto (opcional)',
+    contactSubjectPlaceholder: 'Ex.: Informação histórica de Lanciano',
+    contactMessage: 'Mensagem',
+    contactMessagePlaceholder: 'Descreva com detalhes o que encontrou para nos ajudar a corrigir.',
+    contactSubmit: 'Enviar mensagem',
+    contactSent: 'Mensagem enviada com sucesso.',
+    contactRequiredFields: 'Preencha email e mensagem.',
+
     // General
     loading: 'Carregando...',
     error: 'Erro',
@@ -88,6 +105,7 @@ const translations = {
     // Navigation
     home: 'Home',
     about: 'About',
+    contact: 'Contact',
     miracles: 'Miracles',
     admin: 'Admin',
     login: 'Login',
@@ -158,6 +176,21 @@ const translations = {
     noAccount: "Don't have an account?",
     hasAccount: 'Already have an account?',
     
+    // Contact
+    contactTitle: 'Contact Us',
+    contactDescription: 'Found any inconsistency, research issue, or anything uncomfortable on the site? Send your question, complaint, or suggestion. We will reply manually by email.',
+    contactType: 'Message type',
+    contactTypeQuestion: 'Question',
+    contactTypeComplaint: 'Complaint',
+    contactTypeSuggestion: 'Suggestion',
+    contactSubject: 'Subject (optional)',
+    contactSubjectPlaceholder: 'E.g. Historical info about Lanciano',
+    contactMessage: 'Message',
+    contactMessagePlaceholder: 'Please describe what you found in detail so we can fix it.',
+    contactSubmit: 'Send message',
+    contactSent: 'Message sent successfully.',
+    contactRequiredFields: 'Please fill in email and message.',
+
     // General
     loading: 'Loading...',
     error: 'Error',
@@ -169,6 +202,7 @@ const translations = {
     // Navigation
     home: 'Inicio',
     about: 'Acerca de',
+    contact: 'Contacto',
     miracles: 'Milagros',
     admin: 'Admin',
     login: 'Entrar',
@@ -239,6 +273,21 @@ const translations = {
     noAccount: '¿No tienes cuenta?',
     hasAccount: '¿Ya tienes cuenta?',
     
+    // Contact
+    contactTitle: 'Contáctanos',
+    contactDescription: '¿Encontraste alguna incoherencia, error de investigación o algo que te incomodó en el sitio? Envía tu duda, reclamo o sugerencia. Responderemos manualmente por correo electrónico.',
+    contactType: 'Tipo de mensaje',
+    contactTypeQuestion: 'Duda',
+    contactTypeComplaint: 'Reclamo',
+    contactTypeSuggestion: 'Sugerencia',
+    contactSubject: 'Asunto (opcional)',
+    contactSubjectPlaceholder: 'Ej.: Información histórica de Lanciano',
+    contactMessage: 'Mensaje',
+    contactMessagePlaceholder: 'Describe con detalle lo que encontraste para ayudarnos a corregirlo.',
+    contactSubmit: 'Enviar mensaje',
+    contactSent: 'Mensaje enviado con éxito.',
+    contactRequiredFields: 'Completa correo y mensaje.',
+
     // General
     loading: 'Cargando...',
     error: 'Error',

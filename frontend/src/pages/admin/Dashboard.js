@@ -42,6 +42,7 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, recognized: 0, investigating: 0, countries: 0 });
   const [filters, setFilters] = useState({ countries: [], centuries: [] });
+  const [contactMessages, setContactMessages] = useState([]);
 
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
@@ -53,6 +54,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     fetchFiltersAndStats();
+    fetchContactMessages();
   }, []);
 
   useEffect(() => {
@@ -70,6 +72,16 @@ export const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching metadata:', error);
       toast.error(t('error'));
+    }
+  };
+
+  const fetchContactMessages = async () => {
+    try {
+      const response = await axios.get(`${API}/contact-messages`);
+      setContactMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching contact messages:', error);
+      toast.error('Não foi possível carregar mensagens do Fale Conosco.');
     }
   };
 
@@ -396,6 +408,48 @@ export const Dashboard = () => {
                       </AlertDialog>
                     </div>
                   </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      {/* Contact messages */}
+      <div className="bg-[#121214] border border-[#27272A] overflow-hidden mt-8" data-testid="contact-messages-admin">
+        <div className="p-4 border-b border-[#27272A] flex items-center justify-between">
+          <h2 className="font-serif text-2xl text-[#E5E5E5]">Mensagens do Fale Conosco</h2>
+          <Button
+            variant="outline"
+            onClick={fetchContactMessages}
+            className="border-[#27272A] text-[#A1A1AA] hover:text-[#D4AF37] hover:border-[#D4AF37]"
+          >
+            Atualizar
+          </Button>
+        </div>
+        {contactMessages.length === 0 ? (
+          <div className="text-center py-10 text-[#A1A1AA]">
+            Nenhuma mensagem enviada até o momento.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-[#27272A] hover:bg-transparent">
+                <TableHead className="text-[#A1A1AA]">Data</TableHead>
+                <TableHead className="text-[#A1A1AA]">Tipo</TableHead>
+                <TableHead className="text-[#A1A1AA]">Email</TableHead>
+                <TableHead className="text-[#A1A1AA]">Assunto</TableHead>
+                <TableHead className="text-[#A1A1AA]">Mensagem</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {contactMessages.map((item) => (
+                <TableRow key={item.id} className="border-[#27272A] align-top">
+                  <TableCell className="text-[#A1A1AA] whitespace-nowrap">{new Date(item.created_at).toLocaleString('pt-BR')}</TableCell>
+                  <TableCell className="text-[#E5E5E5] uppercase">{item.type}</TableCell>
+                  <TableCell className="text-[#A1A1AA]">{item.email}</TableCell>
+                  <TableCell className="text-[#A1A1AA]">{item.subject || '-'}</TableCell>
+                  <TableCell className="text-[#E5E5E5] max-w-[520px] whitespace-pre-wrap">{item.message}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

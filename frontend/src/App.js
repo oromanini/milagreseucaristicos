@@ -13,6 +13,7 @@ import { Dashboard } from "./pages/admin/Dashboard";
 import { MiracleForm } from "./pages/admin/MiracleForm";
 import { BulkImport } from "./pages/admin/BulkImport";
 import { Disclaimer, Privacy, Terms } from "./pages/Legal";
+import { Contact } from "./pages/Contact";
 import { Loader2 } from "lucide-react";
 
 // Protected Route Component
@@ -55,6 +56,7 @@ function AppContent() {
         <Route path="/" element={<Layout><Home /></Layout>} />
         <Route path="/miracle/:id" element={<Layout><MiracleDetail /></Layout>} />
         <Route path="/about" element={<Layout><About /></Layout>} />
+        <Route path="/contact" element={<Layout><Contact /></Layout>} />
         <Route path="/disclaimer" element={<Layout><Disclaimer /></Layout>} />
         <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
         <Route path="/terms" element={<Layout><Terms /></Layout>} />
