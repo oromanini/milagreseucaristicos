@@ -51,15 +51,9 @@ export const MusicPlayer = ({ className = '' }) => {
   return (
     <div className={`music-player ${className}`} data-testid="music-player">
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4">
-        <div className="flex items-center gap-2 flex-wrap">
-          <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
-            {trackName}
-          </p>
-          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-[color:var(--text-secondary)] border border-[#27272A] px-2 py-0.5 rounded-sm">
-            <span aria-hidden="true">🇧🇷</span>
-            PT-BR
-          </span>
-        </div>
+        <p className="text-[color:var(--text-primary)] text-sm font-medium tracking-wide">
+          {trackName}
+        </p>
         <audio
           ref={audioRef}
           src={trackSrc}
