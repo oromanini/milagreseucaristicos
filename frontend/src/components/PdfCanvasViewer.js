@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { ChevronLeft, ChevronRight, ExternalLink, FileText } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PDFJS_SCRIPT_ID = 'pdfjs-cdn-script';
@@ -67,6 +67,19 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const syncIsMobile = () => setIsMobile(mediaQuery.matches);
+
+    syncIsMobile();
+    mediaQuery.addEventListener('change', syncIsMobile);
+
+    return () => mediaQuery.removeEventListener('change', syncIsMobile);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -222,7 +235,15 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
         <span className="text-xs text-[#A1A1AA]">{statusText}</span>
       </div>
 
-      <div ref={wrapperRef} className="rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-auto min-h-[320px] p-2">
+      <div ref={wrapperRef} className="relative rounded-md border border-[#27272A] bg-[#0A0A0B] overflow-auto min-h-[320px] p-2">
+        {isBusy && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0A0A0B]/80">
+            <div className="inline-flex items-center gap-2 rounded-md border border-[#27272A] bg-[#121214] px-3 py-2 text-sm text-[#E5E5E5]">
+              <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
+              {statusText}
+            </div>
+          </div>
+        )}
         <canvas
           ref={canvasRef}
           className="block mx-auto max-w-full h-auto"
@@ -230,14 +251,25 @@ export const PdfCanvasViewer = ({ url, title = 'Documento PDF' }) => {
         />
       </div>
 
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 text-[#D4AF37] text-xs hover:underline"
-      >
-        Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
-      </a>
+      {isMobile ? (
+        <a
+          href={url}
+          download
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#D4AF37] px-4 py-2 text-sm font-medium text-black hover:bg-[#e5be4a]"
+        >
+          Baixar PDF no celular para visualizar melhor
+          <FileText className="w-4 h-4" />
+        </a>
+      ) : (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-[#D4AF37] text-xs hover:underline"
+        >
+          Abrir PDF em nova aba <ExternalLink className="w-3 h-3" />
+        </a>
+      )}
     </div>
   );
 };
