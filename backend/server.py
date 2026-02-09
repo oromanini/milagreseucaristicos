@@ -34,6 +34,7 @@ uploads_bucket = AsyncIOMotorGridFSBucket(db, bucket_name="uploads")
 # JWT Config
 JWT_SECRET = os.environ.get('JWT_SECRET', 'default-secret-key')
 JWT_ALGORITHM = "HS256"
+ADMIN_EMAIL = "oscar.romanini.jr@gmail.com"
 
 
 # Create uploads directory
@@ -190,6 +191,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         user = await db.users.find_one({"id": user_id}, {"_id": 0})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
+        if user.get("email", "").lower() != ADMIN_EMAIL:
+            raise HTTPException(status_code=403, detail="Access restricted to authorized administrator")
         return user
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
@@ -200,6 +203,9 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 @api_router.post("/auth/register", response_model=TokenResponse)
 async def register(data: UserCreate):
+    if data.email.lower() != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Only the authorized administrator email can register")
+
     existing = await db.users.find_one({"email": data.email})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -227,6 +233,9 @@ async def register(data: UserCreate):
 
 @api_router.post("/auth/login", response_model=TokenResponse)
 async def login(data: UserLogin):
+    if data.email.lower() != ADMIN_EMAIL:
+        raise HTTPException(status_code=403, detail="Access restricted to authorized administrator")
+
     user = await db.users.find_one({"email": data.email}, {"_id": 0})
     if not user or not verify_password(data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")

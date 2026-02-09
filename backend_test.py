@@ -156,7 +156,7 @@ class EucharisticMiraclesAPITester:
     def test_user_registration(self):
         """Test user registration"""
         test_user = {
-            "email": "test@milagres.com",
+            "email": "oscar.romanini.jr@gmail.com",
             "password": "Test123!",
             "name": "Admin Teste"
         }
@@ -171,7 +171,7 @@ class EucharisticMiraclesAPITester:
     def test_user_login(self):
         """Test user login"""
         login_data = {
-            "email": "test@milagres.com",
+            "email": "oscar.romanini.jr@gmail.com",
             "password": "Test123!"
         }
         
