@@ -4,9 +4,9 @@ on:
     branches: [ main ]
 
 env:
-  PROJECT_ID: milagres-eucaristicos  # O ID correto
+  PROJECT_ID: milagres-eucaristicos
   GAR_LOCATION: us-central1
-  REPOSITORY: milagres-repo          # O repositório que você acabou de criar
+  REPOSITORY: milagres-repo
 
 concurrency:
   group: production-deploy
@@ -49,13 +49,19 @@ jobs:
       - name: Configure Docker
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
-      # DEPLOY BACKEND (Configurado com Banco e CORS)
+      - name: Build and Push Container (Backend)
+        run: |-
+          docker build \
+            -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-backend:${{ github.sha }}" \
+            ./backend
+          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-backend:${{ github.sha }}"
+
       - name: Deploy Backend
         uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
           service: 'milagres-backend'
           region: 'us-central1'
-          source: './backend'
+          image: '${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/milagres-backend:${{ github.sha }}'
           env_vars: |
             MONGO_URL=${{ secrets.MONGO_URI }}
             DB_NAME=milagres-db
