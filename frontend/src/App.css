@@ -50,3 +50,10 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #D4AF37;
 }
+
+@media (max-width: 767px) {
+    [data-testid="hero-section"] ol,
+    [data-testid="hero-section"] ul {
+        display: none;
+    }
+}
