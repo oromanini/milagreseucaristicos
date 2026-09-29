@@ -1,29 +1,26 @@
-FROM python:3.11
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Estágio 1: build de dependências
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Instala ferramentas de compilação
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libffi-dev \
-    libssl-dev \
-    autoconf \
-    automake \
-    libtool \
-    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir --user -r requirements.txt
 
-RUN pip install --upgrade pip
+# Estágio 2: runtime
+FROM python:3.11-slim
 
-# Instala as dependências
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH=/root/.local/bin:$PATH
 
-COPY . .
+WORKDIR /app
 
-# MUDANÇA: Usando uvicorn direto (já que gunicorn não está instalado)
+COPY --from=builder /root/.local /root/.local
+COPY server.py .
+
 CMD exec uvicorn server:app --host 0.0.0.0 --port $PORT
